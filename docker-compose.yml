@@ -1,33 +1,35 @@
 services:
+  db:
+    image: postgres:14
+    container_name: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=django_db
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=django_pass
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
   web:
-    build: .
-    container_name: django_web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django
+    volumes:
+      - .:/usr/src/app:rw
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_DB=django_db
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=django_pass
+      - POSTGRES_HOST=db
     depends_on:
       - db
-    environment:
-      - DEBUG=True
-      - DB_NAME=db
-      - DB_USER=root
-      - DB_PASSWORD=root123
-      - DB_HOST=db
-      - DB_PORT=3306
-    command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
-
-  db:
-    image: mysql:8
-    container_name: django_db
-    restart: always
-    environment:
-      MYSQL_DATABASE: db
-      MYSQL_ROOT_PASSWORD: root123
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
+    command: /bin/bash /usr/src/app/entrypoint.sh
 
 volumes:
-  mysql_data:
+  db_data:

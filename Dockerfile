@@ -1,17 +1,28 @@
-# ใช้ Python 3.9 เป็น base image
-FROM python:3.9
+FROM python:3.9-slim
 
-# กำหนด working directory ใน container
-WORKDIR /app
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# คัดลอกไฟล์ requirements.txt ไปยัง container
-COPY requirements.txt .
+# Create a working directory
+WORKDIR /usr/src/app
 
-# ติดตั้ง dependencies
+# Copy requirements first for caching
+COPY requirements.txt /usr/src/app/
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# คัดลอกไฟล์โปรเจกต์ทั้งหมดไปยัง container
-COPY . .
+# Copy the rest of the project files
+COPY . /usr/src/app/
 
-# รัน migration และเริ่มเซิร์ฟเวอร์
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+# Make entrypoint script executable
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+# Expose Django’s default port
+EXPOSE 8000
+
+# Default command
+CMD ["/usr/src/app/entrypoint.sh"]
