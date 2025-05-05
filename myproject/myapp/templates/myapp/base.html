@@ -14,65 +14,125 @@
 
   <header>
 
+    <!-- 1.1 – Desktop Header Bar -->
     <div class="hidden md:flex bg-[#003049] text-white">
-        <div class="container mx-auto flex items-center justify-center space-x-6 px-6 py-4">
-          <!-- 1) Search input -->
+      <div class="container mx-auto flex items-center justify-center px-6 py-4">
+        <!-- form ขยายเต็มพื้นที่ แต่ไม่เกิน 720px -->
+        <form
+          action="/search/"
+          method="get"
+          class="flex flex-grow max-w-[420px] space-x-[2px]"
+        >
+          <input
+            type="text"
+            name="q"
+            placeholder="ค้นหาแคมป์..."
+            class="flex-grow bg-white text-gray-800 px-4 py-2 rounded"
+          />
+        </form>
+
+        <!-- 2) โปรโมทกิจกรรม -->
+        <button class="ml-6 w-36 bg-[#CD4236] px-4 py-2 rounded">
+          โปรโมทกิจกรรม
+        </button>
+
+        <!-- 3) ค้นหาตัวตน -->
+        <button class="w-36 border border-white px-4 py-2 rounded ml-6">
+          ค้นหาตัวตน
+        </button>
+
+        <!-- 4) Profile icon -->
+        <a href="#" class="ml-6">
+          <img
+            src="{% static 'images/profile.png' %}"
+            alt="Profile"
+            class="h-8 w-8 rounded-full"
+          />
+        </a>
+      </div>
+    </div>
+
+    <header>
+
+      <!-- Mobile Hamburger Navbar -->
+      <div class="flex md:hidden bg-white bg-opacity-90 items-center justify-between p-4">
+        <!-- Hamburger button -->
+        <button id="hamburger-btn" class="p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+    
+        <!-- Logo -->
+        <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-8" />
+    
+        <!-- Profile -->
+        <a href="#">
+          <img src="{% static 'images/profile.png' %}" alt="Profile" class="h-8 w-8 rounded-full" />
+        </a>
+      </div>
+    
+      <!-- Overlay ด้านหลังเมนู (hidden เริ่มต้น) -->
+      <div id="mobile-nav-overlay"
+           class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+    
+      <!-- Off-Canvas Menu (hidden เริ่มต้น) -->
+      <div id="mobile-nav"
+          class="hidden fixed inset-y-0 left-0 w-64 bg-white z-50 p-4 space-y-4 overflow-auto">
+        <!-- 1) Search (ยาวเต็มแถบ, เอาปุ่มออก) -->
+        <div>
           <input
             type="text"
             placeholder="ค้นหาแคมป์..."
-            class="bg-white text-gray-800 rounded px-3 py-2 max-w-[300px]"
+            class="w-full bg-gray-100 rounded px-3 py-2 text-gray-800"
           />
-      
-          <!-- 2) โปรโมทกิจกรรม -->
-          <button class="w-36 bg-[#CD4236] px-4 py-2 rounded">
-            โปรโมทกิจกรรม
-          </button>
-      
-          <!-- 3) ค้นหาตัวตน -->
-          <button class="w-36 border border-white px-4 py-2 rounded">
-            ค้นหาตัวตน
-          </button>
-      
-          <!-- 4) Profile icon -->
-          <a href="#">
-            <img
-              src="{% static 'images/profile.png' %}"
-              alt="Profile"
-              class="h-8 w-8 rounded-full"
-            />
-          </a>
         </div>
+        <!-- 2) โปรโมทกิจกรรม -->
+        <button class="w-full bg-[#CD4236] text-white px-4 py-2 rounded">
+          โปรโมทกิจกรรม
+        </button>
+        <!-- 3) ค้นหาตัวตน (สีน้ำเงิน #003049, ข้อความขาว) -->
+        <button class="w-full bg-[#003049] text-white px-4 py-2 rounded">
+          ค้นหาตัวตน
+        </button>
       </div>
-  
-    <!-- Mobile Hamburger Navbar -->
-    <div class="flex md:hidden bg-white bg-opacity-90 items-center justify-between p-4">
-      <!-- Hamburger button -->
-      <button class="p-2">
-        <!-- คุณอาจใช้ไอคอน SVG แทนได้ -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-      <!-- Logo ย้ายมาไว้ตรงกลาง -->
-      <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-10" />
-      <!-- Profile -->
-      <a href="#">
-        <img src="{% static 'images/profile.png' %}" alt="Profile" class="h-8 w-8 rounded-full" />
-      </a>
-    </div>
-  
+
+    
+    </header>
+    
+    <!-- วาง script หลัง header เพื่อให้ element ทั้งหมดถูกสร้างก่อน -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const btn      = document.getElementById('hamburger-btn');
+        const overlay  = document.getElementById('mobile-nav-overlay');
+        const menu     = document.getElementById('mobile-nav');
+    
+        function toggleMenu() {
+          overlay.classList.toggle('hidden');
+          menu.classList.toggle('hidden');
+        }
+    
+        btn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+      });
+    </script>
+
     <!-- 1.2 – White Bar: Logo (Desktop only) -->
     <div class="hidden md:flex bg-white">
-      <div class="container mx-auto flex justify-center p-4">
-        <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-10" />
+      <div class="container mx-auto flex justify-center px-6 py-[2px]">
+        <img
+          src="{% static 'images/logo.png' %}"
+          alt="Logo"
+          class="h-16"
+        />
       </div>
     </div>
 
     
     <div class="bg-[#003049] text-white">
-        <div class="w-full max-w-[720px] mx-auto p-4">
+        <div class="w-full max-w-[960px] mx-auto p-4">
           <div class="grid grid-cols-6 gap-6 w-full">
             <!-- ค่ายสายสุขภาพ -->
             <div class="flex flex-col items-center">
@@ -101,7 +161,7 @@
             </div>
             <!-- ค่ายสายดิจิทัล/IT -->
             <div class="flex flex-col items-center">
-              <img src="{% static 'images/digital_it.png' %}" alt="ดิจิทัล/IT" class="h-8 mb-1" />
+              <img src="{% static 'images/digital_it.png' %}" alt="IT" class="h-8 mb-1" />
               <span class="text-xs text-center">ดิจิทัล/IT</span>
             </div>
           </div>
