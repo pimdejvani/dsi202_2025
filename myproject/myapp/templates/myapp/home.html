@@ -1,0 +1,17 @@
+{% extends 'myapp/base.html' %}
+{% block content %}
+  <h1>home!</h1>
+  <a href="{% url 'myapp:camp-date' %}"
+    class="block text-center px-4 py-2 bg-[#003049] text-white rounded">
+  ค่ายตามวันที่
+  </a>  
+  <a href="{% url 'myapp:personalize-camp' %}"
+    class="block text-center px-4 py-2 bg-[#CD4236] text-white rounded">
+  ค้นหาตัวตน
+  </a>
+  <a href="{% url 'myapp:promote-start' %}"
+    class="block text-center px-4 py-2 bg-[#CD4236] text-white rounded">
+  โปรโมทกิจกรรม
+  </a>
+
+{% endblock %}

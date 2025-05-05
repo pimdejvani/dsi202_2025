@@ -12,7 +12,7 @@
 <body class="flex flex-col min-h-screen">
 
 
-  <header>
+  <div>
 
     <!-- 1.1 – Desktop Header Bar -->
     <div class="hidden md:flex bg-[#003049] text-white">
@@ -32,17 +32,19 @@
         </form>
 
         <!-- 2) โปรโมทกิจกรรม -->
-        <button class="ml-6 w-36 bg-[#CD4236] px-4 py-2 rounded">
+        <a href="{% url 'myapp:promote-start' %}"
+          class="ml-6 w-36 bg-[#CD4236] px-4 py-2 rounded text-center inline-block">
           โปรโมทกิจกรรม
-        </button>
+        </a>
 
         <!-- 3) ค้นหาตัวตน -->
-        <button class="w-36 border border-white px-4 py-2 rounded ml-6">
+        <a href="{% url 'myapp:personalize-camp' %}"
+          class="ml-6 w-36 border border-white px-4 py-2 rounded text-center inline-block">
           ค้นหาตัวตน
-        </button>
+        </a>
 
         <!-- 4) Profile icon -->
-        <a href="#" class="ml-6">
+        <a href="{% url 'myapp:profile' %}" class="ml-6 inline-block">
           <img
             src="{% static 'images/profile.png' %}"
             alt="Profile"
@@ -66,13 +68,20 @@
         </button>
     
         <!-- Logo -->
-        <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-8" />
+        <a href="{% url 'myapp:home' %}" class="inline-block">
+          <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-8" />
+        </a>
     
         <!-- Profile -->
-        <a href="#">
-          <img src="{% static 'images/profile.png' %}" alt="Profile" class="h-8 w-8 rounded-full" />
+        <a href="{% url 'myapp:profile' %}" class="inline-block ml-4">
+          <img
+            src="{% static 'images/profile.png' %}"
+            alt="Profile"
+            class="h-8 w-8 rounded-full"
+          />
         </a>
       </div>
+
     
       <!-- Overlay ด้านหลังเมนู (hidden เริ่มต้น) -->
       <div id="mobile-nav-overlay"
@@ -90,13 +99,19 @@
           />
         </div>
         <!-- 2) โปรโมทกิจกรรม -->
-        <button class="w-full bg-[#CD4236] text-white px-4 py-2 rounded">
-          โปรโมทกิจกรรม
-        </button>
+        <a
+        href="{% url 'myapp:promote-start' %}"
+        class="block w-full bg-[#CD4236] text-white px-4 py-2 rounded text-center mt-4"
+      >
+        โปรโมทกิจกรรม
+      </a>
         <!-- 3) ค้นหาตัวตน (สีน้ำเงิน #003049, ข้อความขาว) -->
-        <button class="w-full bg-[#003049] text-white px-4 py-2 rounded">
+        <a
+          href="{% url 'myapp:personalize-camp' %}"
+          class="block w-full bg-[#003049] text-white px-4 py-2 rounded text-center mt-2"
+        >
           ค้นหาตัวตน
-        </button>
+        </a>
       </div>
 
     
@@ -122,52 +137,101 @@
     <!-- 1.2 – White Bar: Logo (Desktop only) -->
     <div class="hidden md:flex bg-white">
       <div class="container mx-auto flex justify-center px-6 py-[2px]">
-        <img
-          src="{% static 'images/logo.png' %}"
-          alt="Logo"
-          class="h-16"
-        />
+        <a href="{% url 'myapp:home' %}" class="inline-block">
+          <img
+            src="{% static 'images/logo.png' %}"
+            alt="Logo"
+            class="h-16"
+          />
+        </a>
       </div>
     </div>
 
     
     <div class="bg-[#003049] text-white">
-        <div class="w-full max-w-[960px] mx-auto p-4">
-          <div class="grid grid-cols-6 gap-6 w-full">
-            <!-- ค่ายสายสุขภาพ -->
-            <div class="flex flex-col items-center">
-              <img src="{% static 'images/health.png' %}" alt="สุขภาพ" class="h-8 mb-1" />
-              <span class="text-xs">สุขภาพ</span>
-            </div>
-            <!-- ค่ายสายวิศวกรรม -->
-            <div class="flex flex-col items-center">
-              <img src="{% static 'images/engineer.png' %}" alt="วิศวกรรม" class="h-8 mb-1" />
-              <span class="text-xs">วิศวกรรม</span>
-            </div>
-            <!-- ค่ายสายภาษา -->
-            <div class="flex flex-col items-center">
-              <img src="{% static 'images/language.png' %}" alt="ภาษา" class="h-8 mb-1" />
-              <span class="text-xs">ภาษา</span>
-            </div>
-            <!-- ค่ายสายสถาปัตย์ -->
-            <div class="flex flex-col items-center">
-              <img src="{% static 'images/architecture.png' %}" alt="สถาปัตย์" class="h-8 mb-1" />
-              <span class="text-xs">สถาปัตย์</span>
-            </div>
-            <!-- ค่ายอาสา -->
-            <div class="flex flex-col items-center">
-              <img src="{% static 'images/volunteer.png' %}" alt="อาสา" class="h-8 mb-1" />
-              <span class="text-xs">อาสา</span>
-            </div>
-            <!-- ค่ายสายดิจิทัล/IT -->
-            <div class="flex flex-col items-center">
-              <img src="{% static 'images/digital_it.png' %}" alt="IT" class="h-8 mb-1" />
-              <span class="text-xs text-center">ดิจิทัล/IT</span>
-            </div>
-          </div>
+      <div class="w-full max-w-[960px] mx-auto p-4">
+        <div class="grid grid-cols-6 gap-6 w-full">
+          <!-- ค่ายสายสุขภาพ -->
+          <a
+            href="{% url 'myapp:camp-health' %}"
+            class="flex flex-col items-center cursor-pointer"
+          >
+            <img
+              src="{% static 'images/health.png' %}"
+              alt="สุขภาพ"
+              class="h-8 mb-1"
+            />
+            <span class="text-xs">สุขภาพ</span>
+          </a>
+    
+          <!-- ค่ายสายวิศวกรรม -->
+          <a
+            href="{% url 'myapp:camp-engineer' %}"
+            class="flex flex-col items-center cursor-pointer"
+          >
+            <img
+              src="{% static 'images/engineer.png' %}"
+              alt="วิศวกรรม"
+              class="h-8 mb-1"
+            />
+            <span class="text-xs">วิศวกรรม</span>
+          </a>
+    
+          <!-- ค่ายสายภาษา -->
+          <a
+            href="{% url 'myapp:camp-language' %}"
+            class="flex flex-col items-center cursor-pointer"
+          >
+            <img
+              src="{% static 'images/language.png' %}"
+              alt="ภาษา"
+              class="h-8 mb-1"
+            />
+            <span class="text-xs">ภาษา</span>
+          </a>
+    
+          <!-- ค่ายสายสถาปัตย์ -->
+          <a
+            href="{% url 'myapp:camp-architecture' %}"
+            class="flex flex-col items-center cursor-pointer"
+          >
+            <img
+              src="{% static 'images/architecture.png' %}"
+              alt="สถาปัตย์"
+              class="h-8 mb-1"
+            />
+            <span class="text-xs">สถาปัตย์</span>
+          </a>
+    
+          <!-- ค่ายอาสา -->
+          <a
+            href="{% url 'myapp:camp-volunteer' %}"
+            class="flex flex-col items-center cursor-pointer"
+          >
+            <img
+              src="{% static 'images/volunteer.png' %}"
+              alt="อาสา"
+              class="h-8 mb-1"
+            />
+            <span class="text-xs">อาสา</span>
+          </a>
+    
+          <!-- ค่ายสายดิจิทัล/IT -->
+          <a
+            href="{% url 'myapp:camp-digital_it' %}"
+            class="flex flex-col items-center cursor-pointer"
+          >
+            <img
+              src="{% static 'images/digital_it.png' %}"
+              alt="ดิจิทัล/IT"
+              class="h-8 mb-1"
+            />
+            <span class="text-xs text-center">ดิจิทัล/IT</span>
+          </a>
         </div>
       </div>
-      
+    </div>
+    
   
   </header>
   <!-- MAIN CONTENT -->
