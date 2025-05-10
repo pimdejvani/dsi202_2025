@@ -11,10 +11,13 @@ from .views import (
     HealthCampView, EngineerCampView, LanguageCampView,
     ArchitectureCampView, VolunteerCampView, DigitalItCampView, DateCampView,
 )
+from myapp.views import CustomSignupView
+
 
 app_name = 'myapp'
 
 urlpatterns = [
+    path('accounts/signup/', CustomSignupView.as_view(), name='signup'),
     # 1. หน้าแรก
     path('peddlecamp/', HomePageView.as_view(), name='home'),
 

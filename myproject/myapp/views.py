@@ -1,5 +1,19 @@
 from django.views.generic import TemplateView
 
+
+
+from allauth.account.views import SignupView
+from django.shortcuts import redirect
+
+class CustomSignupView(SignupView):
+    def form_valid(self, form):
+        # เมื่อฟอร์มสมัครสมาชิกถูกต้อง
+        super().form_valid(form)
+        # รีไดเร็กต์ไปยังหน้า login หลังจากสมัครสมาชิกเสร็จ
+        return redirect('/accounts/login/')
+    
+
+
 # 1. หน้าแรก
 class HomePageView(TemplateView):
     template_name = 'myapp/home.html'
