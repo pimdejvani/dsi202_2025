@@ -10,9 +10,8 @@ from .views import (
     PromoteDonePageView, 
     HealthCampView, EngineerCampView, LanguageCampView,
     ArchitectureCampView, VolunteerCampView, DigitalItCampView, DateCampView,
+    CustomSignupView,
 )
-from myapp.views import CustomSignupView
-
 
 app_name = 'myapp'
 

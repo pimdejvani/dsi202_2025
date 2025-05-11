@@ -141,7 +141,7 @@ ACCOUNT_LOGIN_ON_SIGNUP = True
 LOGIN_URL = "/accounts/login/"  # หน้า login เมื่อยังไม่ล็อกอิน
 LOGIN_REDIRECT_URL = "/peddlecamp/"  # หลังล็อกอินจะไปที่หน้า peddlecamp
 ACCOUNT_LOGOUT_REDIRECT_URL = "/peddlecamp/"  # หลังออกจากระบบจะไปที่หน้า peddlecamp
-ACCOUNT_SIGNUP_REDIRECT_URL = "/accounts/login/"
+ACCOUNT_SIGNUP_REDIRECT_URL = "peddlecamp/health/"
 
 # Google OAuth settings
 SOCIALACCOUNT_PROVIDERS = {

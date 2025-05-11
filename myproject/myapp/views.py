@@ -2,16 +2,27 @@ from django.views.generic import TemplateView
 
 
 
+from django.contrib.auth.views import LoginView
+
+class CustomLoginView(LoginView):
+    template_name = 'myapp/account/login.html'
+
+
+
+
+
 from allauth.account.views import SignupView
 from django.shortcuts import redirect
+from django.conf import settings 
 
 class CustomSignupView(SignupView):
     def form_valid(self, form):
         # เมื่อฟอร์มสมัครสมาชิกถูกต้อง
         super().form_valid(form)
-        # รีไดเร็กต์ไปยังหน้า login หลังจากสมัครสมาชิกเสร็จ
-        return redirect('/accounts/login/')
-    
+        # ใช้ ACCOUNT_SIGNUP_REDIRECT_URL จาก settings.py หรือกำหนด URL ที่ต้องการ
+        redirect_url = 'http://localhost:8000/peddlecamp/'
+        
+        return redirect(redirect_url)  # รีไดเร็กต์ไปที่ URL ที่กำหนด
 
 
 # 1. หน้าแรก

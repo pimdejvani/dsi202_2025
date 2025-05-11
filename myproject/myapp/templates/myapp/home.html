@@ -14,4 +14,38 @@
   โปรโมทกิจกรรม
   </a>
 
+  <!-- ปุ่ม Dropdown -->
+  <div class="relative inline-block text-left">
+    <button id="dropdownButton" class="block text-center px-4 py-2 bg-[#003049] text-white rounded">
+      เมนูเพิ่มเติม
+    </button>
+    <div id="dropdownMenu" class="absolute hidden bg-white text-black rounded shadow-md w-48 mt-2">
+      <p class="block px-4 py-2 text-sm">เมนู 1</p>
+      <p class="block px-4 py-2 text-sm">เมนู 2</p>
+      <p class="block px-4 py-2 text-sm">เมนู 3</p>
+    </div>
+  </div>
+
+  <script>
+    // เมื่อคลิกที่ปุ่ม ให้แสดงหรือซ่อน drop-down menu
+    document.getElementById('dropdownButton').addEventListener('click', function (event) {
+      // ป้องกันการคลิกที่ปุ่มจากการบล็อกเหตุการณ์ใน listener ด้านล่าง
+      event.stopPropagation();
+      
+      var dropdown = document.getElementById('dropdownMenu');
+      dropdown.classList.toggle('hidden');
+    });
+
+    // เมื่อคลิกที่พื้นที่อื่น ๆ ให้ซ่อน dropdown
+    document.addEventListener('click', function(event) {
+      var dropdown = document.getElementById('dropdownMenu');
+      var dropdownButton = document.getElementById('dropdownButton');
+
+      // ตรวจสอบว่าไม่ได้คลิกที่ปุ่มหรือตัวเมนู dropdown
+      if (!dropdownButton.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.add('hidden'); // ซ่อนเมนู
+      }
+    });
+  </script>
+
 {% endblock %}

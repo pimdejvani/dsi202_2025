@@ -43,14 +43,52 @@
           ค้นหาตัวตน
         </a>
 
-        <!-- 4) Profile icon -->
-        <a href="{% url 'myapp:profile' %}" class="ml-6 inline-block">
-          <img
-            src="{% static 'images/profile.png' %}"
-            alt="Profile"
-            class="h-8 w-8 rounded-full"
-          />
-        </a>
+        <!-- ปุ่มโปรไฟล์ -->
+        <div class="relative ml-6 inline-block">
+          <a href="{% if user.is_authenticated %}#{% else %}{% url 'login' %}{% endif %}" class="inline-block">
+            <img src="{% static 'images/profile.png' %}" alt="Profile" class="h-8 w-8 rounded-full" />
+          </a>
+
+          {% if user.is_authenticated %}
+          <!-- เมนูดรอปดาวน์เมื่อผู้ใช้ล็อกอินแล้ว -->
+          <div id="dropdown" class="absolute right-0 hidden bg-white shadow-lg rounded mt-2 w-48">
+            <ul class="list-none p-2">
+              <!-- ปุ่มโปรไฟล์ -->
+              <li>
+                <a href="{% url 'myapp:profile' %}" class="block px-4 py-2 text-black hover:bg-gray-200">Profile</a>
+              </li>
+              <!-- ปุ่มออกจากระบบ -->
+              <li>
+                <form id="logout-form" action="{% url 'logout' %}" method="POST">
+                  {% csrf_token %}
+                  <button type="submit" class="block px-4 py-2 text-black hover:bg-gray-200 w-full text-left">Log Out</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- JavaScript สำหรับแสดง/ซ่อนเมนูดรอปดาวน์ -->
+        <script>
+          const profileButton = document.querySelector('a[href="#"]');
+          const dropdown = document.getElementById('dropdown');
+
+          // เปิด/ปิดเมนูดรอปดาวน์เมื่อคลิกที่ปุ่มโปรไฟล์
+          profileButton.addEventListener('click', function(event) {
+            event.preventDefault();  // หยุดการเปลี่ยน URL
+            dropdown.classList.toggle('hidden');
+          });
+
+          // ปิดเมนูดรอปดาวน์ถ้าคลิกที่ที่อื่น
+          window.addEventListener('click', function(event) {
+            if (!profileButton.contains(event.target)) {
+              dropdown.classList.add('hidden');
+            }
+          });
+        </script>
+
+
       </div>
     </div>
 
@@ -72,16 +110,47 @@
           <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-8" />
         </a>
     
-        <!-- Profile -->
-        <a href="{% url 'myapp:profile' %}" class="inline-block ml-4">
-          <img
-            src="{% static 'images/profile.png' %}"
-            alt="Profile"
-            class="h-8 w-8 rounded-full"
-          />
-        </a>
+        <div class="flex md:hidden bg-white bg-opacity-90 items-center justify-between p-4">
+        <!-- ปุ่ม Dropdown สำหรับโปรไฟล์ -->
+        <div class="relative inline-block text-left">
+          <button id="profileDropdownButton" class="inline-block ml-4">
+            <img
+              src="{% static 'images/profile.png' %}"
+              alt="Profile"
+              class="h-8 w-8 rounded-full"
+            />
+          </button>
+          <!-- เมนู Dropdown -->
+          <div id="profileDropdownMenu" class="absolute hidden bg-white text-black rounded shadow-md mt-2 left-1/2 transform -translate-x-1/2">
+            <div class="w-auto max-w-xs">
+              <a href="{% url 'myapp:profile' %}" class="block px-4 py-2 text-sm">Profile</a>
+              <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm">Log Out</a>
+            </div>
+          </div>
+        </div>
       </div>
 
+      <script>
+        // เมื่อคลิกที่ปุ่มโปรไฟล์ ให้แสดงหรือซ่อนเมนู dropdown
+        document.getElementById('profileDropdownButton').addEventListener('click', function (event) {
+          // ป้องกันการคลิกที่ปุ่มจากการบล็อกเหตุการณ์ใน listener ด้านล่าง
+          event.stopPropagation();
+          
+          var dropdown = document.getElementById('profileDropdownMenu');
+          dropdown.classList.toggle('hidden');
+        });
+
+        // เมื่อคลิกที่พื้นที่อื่น ๆ ให้ซ่อน dropdown
+        document.addEventListener('click', function(event) {
+          var dropdown = document.getElementById('profileDropdownMenu');
+          var profileButton = document.getElementById('profileDropdownButton');
+
+          // ตรวจสอบว่าไม่ได้คลิกที่ปุ่มหรือเมนู dropdown
+          if (!profileButton.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.add('hidden'); // ซ่อนเมนู
+          }
+        });
+      </script>
     
       <!-- Overlay ด้านหลังเมนู (hidden เริ่มต้น) -->
       <div id="mobile-nav-overlay"
