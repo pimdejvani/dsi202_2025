@@ -14,6 +14,5 @@ def create_student_on_signup(sender, request, user, **kwargs):
             email=user.email,
             major="",  # สามารถเพิ่มค่าเริ่มต้นได้
             grade="",
-            hobby="",
             interest=""
         )

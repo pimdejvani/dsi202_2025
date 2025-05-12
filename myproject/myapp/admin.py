@@ -1,37 +1,73 @@
 from django.contrib import admin
 from .models import Student, Camp
 
-# ลงทะเบียนโมเดล Student
-@admin.register(Student)
+
+# การแสดงข้อมูลของ Student
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'major', 'grade', 'hobby', 'interest')  # แสดงฟิลด์ในตาราง
-    search_fields = ('username', 'email', 'major')  # ค้นหาจากฟิลด์เหล่านี้
-    list_filter = ('major', 'grade')  # เพิ่มตัวกรองในหน้า admin
+    list_display = (
+        'username', 'email', 'birth', 'level', 'grade', 'degree', 'interest'
+    )  # ฟิลด์ที่จะแสดงในหน้า admin list
+    list_filter = ('level', 'degree')  # ฟิลด์ที่สามารถกรองได้
+    search_fields = ('username', 'email')  # ฟิลด์ที่สามารถค้นหาได้
+    ordering = ('username',)  # การเรียงลำดับตาม username
 
-# ลงทะเบียนโมเดล Camp
-@admin.register(Camp)
-class CampAdmin(admin.ModelAdmin):
-    list_display = ('camp_name', 'organize_camp', 'typeof_camp', 'start_date', 'final_date', 'payment_type', 'price', 'place', 'activity_mode', 'linkcamp', 'has_organized')  # แสดงฟิลด์ในตาราง
-    search_fields = ('camp_name', 'organize_camp', 'typeof_camp')  # ค้นหาจากฟิลด์เหล่านี้
-    list_filter = ('typeof_camp', 'payment_type', 'activity_mode')  # เพิ่มตัวกรองในหน้า admin
-    date_hierarchy = 'start_date'  # เพิ่มการกรองตามวันที่ (สามารถคลิกเลือกวันที่)
-    ordering = ('-start_date',)  # กำหนดให้เรียงจากวันที่เริ่มต้นล่าสุด
-
-    # แสดงฟิลด์เพิ่มเติมเมื่อดูรายละเอียดค่าย (ในหน้า Detail view)
+    # การแสดงข้อมูลในหน้า detail view
     fieldsets = (
         (None, {
-            'fields': ('camp_name', 'organize_camp', 'description_camp', 'upload_file')
+            'fields': ('username', 'email', 'birth')
         }),
-        ('ค่ายข้อมูลเพิ่มเติม', {
-            'fields': ('typeof_camp', 'start_date', 'final_date', 'due_date', 'num_candi', 'payment_type', 'price', 'candi_proper', 'activity_mode', 'place')
+        ('ระดับการศึกษา', {
+            'fields': ('level', 'grade', 'degree')
         }),
-        ('ช่องทางติดต่อ', {
-            'fields': ('ig', 'facebook', 'line', 'website', 'linkcamp')
-        }),
-        ('รายละเอียดกิจกรรม', {
-            'fields': ('detail_activity', 'poster', 'prove')
+        ('ความสนใจ', {
+            'fields': ('interest',)
         }),
     )
 
-    # เพิ่มฟิลด์ที่สามารถแก้ไขได้จากหน้า List view
-    list_editable = ('price', 'has_organized')  # ทำให้ฟิลด์ราคาและสถานะจัดงานแก้ไขได้ในหน้า List view
+
+class CampAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'camp_name', 'typeof_camp', 'start_date', 'end_date', 'num_candi', 
+        'payment_type', 'price', 'primary', 'secondary', 'vocational_minor', 'vocational_major',
+        'drop', 'degree', 'age_condition', 'min_age', 'activity_mode', 'place', 'organize_camp', 
+        'has_organized', 'poster', 'prove'
+    )
+    list_filter = (
+        'typeof_camp', 'payment_type', 'primary', 'secondary', 'vocational_minor', 
+        'vocational_major', 'drop', 'degree', 'age_condition', 'activity_mode'
+    )
+    search_fields = ('name', 'camp_name', 'organize_camp', 'detail_activity')
+    ordering = ('-start_date',)
+    list_editable = ('price', 'num_candi', 'has_organized')
+
+    # กำหนดการแสดงผลของฟอร์มในหน้า edit 
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'email', 'phone_num', 'camp_name', 'description_camp', 'upload_file', 'typeof_camp', 'start_date', 'end_date', 'final_date', 'num_candi')
+        }),
+        ('Payment Information', {
+            'fields': ('payment_type', 'price',)
+        }),
+        ('Education Information', {
+            'fields': ('primary', 'primary_grade_condition', 'primary_grade_from', 'primary_grade_to', 
+                       'secondary', 'secondary_grade_condition', 'secondary_grade_from', 'secondary_grade_to', 
+                       'vocational_minor', 'vocational_major', 'drop', 'degree', 'degree_grade_condition', 'degree_from', 
+                       'degree_to', 'other')
+        }),
+        ('Age Information', {
+            'fields': ('age_condition', 'min_age')
+        }),
+        ('Activity Information', {
+            'fields': ('activity_mode', 'place', 'detail_activity', 'linkcamp', 'organize_camp', 'has_organized')
+        }),
+        ('Social Media', {
+            'fields': ('ig', 'facebook', 'line', 'website')
+        }),
+        ('Images', {
+            'fields': ('poster', 'prove')
+        }),
+    )
+
+# ลงทะเบียน Model กับ Admin
+admin.site.register(Student, StudentAdmin)
+admin.site.register(Camp, CampAdmin)
