@@ -12,7 +12,9 @@ def create_student_on_signup(sender, request, user, **kwargs):
         Student.objects.get_or_create(
             username="",
             email=user.email,
-            major="",  # สามารถเพิ่มค่าเริ่มต้นได้
+            birth="",  # สามารถเพิ่มค่าเริ่มต้นได้
+            level="",
             grade="",
+            degree="",
             interest=""
         )

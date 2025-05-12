@@ -1,5 +1,6 @@
 from django.views.generic import TemplateView
-
+from django.shortcuts import render, redirect
+from .forms import CampForm
 
 
 from django.contrib.auth.views import LoginView
@@ -75,6 +76,21 @@ class PromoteStartPageView(TemplateView):
 class PromoteFormPageView(TemplateView):
     template_name = 'myapp/promote_form.html'
 
+    def get(self, request, *args, **kwargs):
+        print('------ get')
+        form = CampForm()
+        return self.render_to_response({'form': form})
+
+    def post(self, request, *args, **kwargs):
+        print('------ post')
+        form = CampForm(request.POST, request.FILES)
+        if form.is_valid():
+            print('------ form valid')
+            form.save()  # บันทึกข้อมูลลงในฐานข้อมูล
+            return redirect('myapp:promote-done')  # เปลี่ยนไปยังหน้า 'done'
+        else:
+            print('------ form errors:', form.errors)  # พิมพ์ข้อผิดพลาดของฟอร์ม
+        return self.render_to_response({'form': form})
 
 # 7. โปรโมทกิจกรรม - เสร็จสิ้น
 class PromoteDonePageView(TemplateView):

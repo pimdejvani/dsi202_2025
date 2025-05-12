@@ -1,0 +1,50 @@
+from django import forms
+from .models import Camp
+
+class CampForm(forms.ModelForm):
+    class Meta:
+        model = Camp
+        fields = [
+            'name',
+            'email',
+            'phone_num',
+            'camp_name',
+            'description_camp',
+            'upload_file',
+            'typeof_camp',
+            'start_date',
+            'end_date',
+            'final_date',
+            'num_candi',
+            'payment_type',
+            'price',
+            'primary',
+            'primary_grade_condition',
+            'primary_grade_from',
+            'primary_grade_to',
+            'secondary',
+            'secondary_grade_condition',
+            'secondary_grade_from',
+            'secondary_grade_to',
+            'vocational_minor',
+            'vocational_major',
+            'drop',
+            'degree',
+            'degree_grade_condition',
+            'degree_from',
+            'degree_to',
+            'other',
+            'age_condition',
+            'min_age',
+            'activity_mode',
+            'place',
+            'ig',
+            'facebook',
+            'line',
+            'website',
+            'linkcamp',
+            'organize_camp',
+            'has_organized',
+            'detail_activity',
+            'poster' 
+        ]

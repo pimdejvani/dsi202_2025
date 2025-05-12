@@ -109,12 +109,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# บอก Django ให้สแกนโฟลเดอร์ <project_root>/static/
-# (เช่นเก็บ logo.png, custom.css, custom.js)
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-
+# ตั้งค่าการให้ไฟล์ static ถูกใช้งานในช่วงการพัฒนา
+if DEBUG:
+    STATICFILES_DIRS = [
+        BASE_DIR / "static",
+    ]
 
 MEDIA_URL = '/media/'
 

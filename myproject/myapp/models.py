@@ -73,21 +73,21 @@ class Student(models.Model):
 class Camp(models.Model):
 
 
-    name = models.CharField(max_length=150)  # ชื่อผู้จัด
-    email = models.EmailField()
-    phone_num = models.CharField(max_length=20)
-    camp_name = models.CharField(max_length=200)
-    description_camp = models.TextField()
-    upload_file = models.FileField(upload_to='camp_uploads/')
+    name = models.CharField(max_length=150,null=True)  # ชื่อผู้จัด
+    email = models.EmailField(null=True)
+    phone_num = models.CharField(max_length=20,null=True,blank=True)
+    camp_name = models.CharField(max_length=200, null=True)
+    description_camp = models.TextField(null=True)
+    upload_file = models.FileField(upload_to='camp_uploads/',null=True)
     CAMP_TYPE_CHOICES = [('health','ค่ายสายสุขภาพ'),('engineer','ค่ายสายวิศวกรรม'),('language','ค่ายสายภาษา'),('architecture','ค่ายสายสถาปัตย์'),('volunteer','ค่ายอาสา'),('digital_it','ค่ายสายดิจิทัล/IT'),('other','อื่นๆ'),]
-    typeof_camp = models.CharField(max_length=20,choices=CAMP_TYPE_CHOICES)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    final_date = models.DateField()
-    num_candi = models.PositiveIntegerField()
+    typeof_camp = models.CharField(max_length=20,choices=CAMP_TYPE_CHOICES,null=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    final_date = models.DateField(null=True)
+    num_candi = models.PositiveIntegerField(null=True)
 
     PAYMENT_CHOICES = [('none', 'ไม่มีค่าใช้จ่าย'),('pre',  'จ่ายตอนสมัคร'),('post', 'จ่ายหลังประกาศรายชื่อ'),]
-    payment_type = models.CharField(max_length=10,choices=PAYMENT_CHOICES,verbose_name='วิธีการชำระ')
+    payment_type = models.CharField(max_length=10,choices=PAYMENT_CHOICES,verbose_name='วิธีการชำระ',null=True)
     price = models.DecimalField(max_digits=10,decimal_places=2,blank=True,null=True)
     # สำหรับเลือกระดับการศึกษา
     primary = models.BooleanField(default=False)
@@ -145,10 +145,10 @@ class Camp(models.Model):
     facebook = models.URLField(blank=True, null=True)
     line = models.CharField(max_length=100, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
-    linkcamp = models.URLField()
+    linkcamp = models.URLField(null=True)
     organize_camp = models.CharField(max_length=200)
-    has_organized = models.BooleanField()
-    detail_activity = models.TextField()
+    has_organized = models.BooleanField(null=True)
+    detail_activity = models.TextField(null=True)
     poster = models.ImageField(upload_to='camp_posters/', blank=True, null=True)
     prove = models.BooleanField(default=False)
 
@@ -202,16 +202,6 @@ class Camp(models.Model):
             if self.secondary_grade_from > self.secondary_grade_to:
                 raise ValidationError('เกรดจากต้องน้อยกว่าเกรดถึง')
 
-        if self.degree and self.degree_grade_condition == 'from':
-            if not self.degree_from or not self.degree_to:
-                raise ValidationError('กรุณากรอกระดับปริญญาจากและถึง')
-            if self.degree_from not in ['bachelor', 'doctorate']:
-                raise ValidationError('กรอกระดับปริญญาจากต้องเป็น ตรี หรือ เอก')
-            if self.degree_to not in ['bachelor', 'doctorate']:
-                raise ValidationError('กรอกระดับปริญญาถึงต้องเป็น ตรี หรือ เอก')
-            if self.degree_from > self.degree_to:
-                raise ValidationError('ระดับปริญญาจากต้องน้อยกว่าหรือเท่ากับระดับปริญญาถึง')
-
         if errors:
             raise ValidationError(errors)
 
@@ -221,12 +211,6 @@ class Camp(models.Model):
             self.price = None
         if self.activity_mode == 'online':
             self.place = None
-        if self.level == 'primary' or self.level == 'secondary':
-            self.level_info = {self.level: [self.grade_from, self.grade_to]}
-        elif self.level == 'degree':
-            self.level_info = {'degree': [self.degree_from, self.degree_to]}
-        else:
-            self.level_info = {self.level: []}
         super().save(*args, **kwargs)
 
     def __str__(self):
