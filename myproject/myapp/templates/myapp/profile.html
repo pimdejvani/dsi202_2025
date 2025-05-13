@@ -6,99 +6,110 @@
 {% extends 'myapp/base.html' %}
 
 {% block content %}
-  <h2>โปรไฟล์ของคุณ</h2>
-  
+  <div style="text-align: center; font-weight: bold; font-size: 24px; margin-bottom: 20px;">
+    โปรไฟล์
+  </div>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     
-    <!-- ฟิลด์ Username -->
-    <div class="form-group">
-      <label for="id_username">ชื่อผู้ใช้:</label>
-      <input type="text" name="username" value="{{ form.username.value }}" class="form-control" id="id_username">
-      {% if form.username.errors %}
-        <div class="text-danger">
-          {% for error in form.username.errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
-
-    <!-- ฟิลด์ Birth (วันเกิด) -->
-    <div class="form-group">
-      <label for="id_birth">วันเกิด:</label>
-      <!-- ใช้ input type="text" และตั้งค่า readonly เพื่อไม่ให้พิมพ์ -->
-      <input type="text" name="birth" id="birth" value="{{ form.birth.value|date:'Y-m-d' }}" class="form-control" placeholder="yyyy-mm-dd" readonly>
-      {% if form.birth.errors %}
-        <div class="text-danger">
-          {% for error in form.birth.errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
-
-
-    <!-- ฟิลด์ Level (ระดับการศึกษา) -->
-    <div class="form-group">
-      <label for="id_level">ระดับการศึกษา:</label>
-      <select name="level" class="form-control" id="id_level">
-        <option value="">เลือกระดับการศึกษา</option>
-        {% for choice in form.level.field.choices %}
-          <option value="{{ choice.0 }}" {% if choice.0 == form.level.value %}selected{% endif %}>
-            {{ choice.1 }}
-          </option>
+  <!-- ฟิลด์ Username -->
+  <div style="margin-bottom: 15px;">
+    <label for="id_username" style="display: block; margin-bottom: 5px;">ชื่อผู้ใช้:</label>
+    <input type="text" name="username" id="id_username"
+          value="{{ form.username.value|default:'' }}"
+          style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                  border: 1px solid #ccc; border-radius: 4px;">
+    {% if form.username.errors %}
+      <div class="text-danger">
+        {% for error in form.username.errors %}
+          <p>{{ error }}</p>
         {% endfor %}
-      </select>
-      {% if form.level.errors %}
-        <div class="text-danger">
-          {% for error in form.level.errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
+  </div>
 
-    <!-- ฟิลด์ Grade (เกรด) -->
-    <div class="form-group" id="grade_div" style="display: none;">
-      <label for="id_grade">ชั้นปีที่:</label>
-      <select name="grade" class="form-control" id="id_grade">
-        <option value="">เลือกเกรด</option>
-        {% for choice in form.grade.field.choices %}
-          <option value="{{ choice.0 }}" {% if choice.0 == form.grade.value %}selected{% endif %}>
-            {{ choice.1 }}
-          </option>
+  <!-- ฟิลด์ Birth (วันเกิด) -->
+  <div style="margin-bottom: 15px;">
+    <label for="birth" style="display: block; margin-bottom: 5px;">วันเกิด:</label>
+    <input type="text" name="birth" id="birth"
+          value="{{ form.birth.value|date:'Y-m-d' }}"
+          placeholder="yyyy-mm-dd" readonly
+          style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                  border: 1px solid #ccc; border-radius: 4px;">
+    {% if form.birth.errors %}
+      <div class="text-danger">
+        {% for error in form.birth.errors %}
+          <p>{{ error }}</p>
         {% endfor %}
-      </select>
-      {% if form.grade.errors %}
-        <div class="text-danger">
-          {% for error in form.grade.errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
+  </div>
 
-    <!-- ฟิลด์ Degree (ระดับปริญญา) -->
-    <div class="form-group" id="degree_div" style="display: none;">
-      <label for="id_degree">ระดับ:</label>
-      <select name="degree" class="form-control" id="id_degree">
-        <option value="">เลือกระดับปริญญา</option>
-        {% for choice in form.degree.field.choices %}
-          <option value="{{ choice.0 }}" {% if choice.0 == form.degree.value %}selected{% endif %}>
-            {{ choice.1 }}
-          </option>
+  <!-- ฟิลด์ Level (ระดับการศึกษา) -->
+  <div style="margin-bottom: 15px;">
+    <label for="id_level" style="display: block; margin-bottom: 5px;">ระดับการศึกษา:</label>
+    <select name="level" id="id_level"
+            style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                  border: 1px solid #ccc; border-radius: 4px;">
+      <option value="">เลือกระดับการศึกษา</option>
+      {% for choice in form.level.field.choices %}
+        <option value="{{ choice.0 }}" {% if choice.0 == form.level.value %}selected{% endif %}>
+          {{ choice.1 }}
+        </option>
+      {% endfor %}
+    </select>
+    {% if form.level.errors %}
+      <div class="text-danger">
+        {% for error in form.level.errors %}
+          <p>{{ error }}</p>
         {% endfor %}
-      </select>
-      {% if form.degree.errors %}
-        <div class="text-danger">
-          {% for error in form.degree.errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
+  </div>
 
+  <!-- ฟิลด์ Grade (เกรด) -->
+  <div id="grade_div" style="margin-bottom: 15px; display: none;">
+    <label for="id_grade" style="display: block; margin-bottom: 5px;">ชั้นปีที่:</label>
+    <select name="grade" id="id_grade"
+            style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                  border: 1px solid #ccc; border-radius: 4px;">
+      <option value="">เลือกเกรด</option>
+      {% for choice in form.grade.field.choices %}
+        <option value="{{ choice.0 }}" {% if choice.0 == form.grade.value %}selected{% endif %}>
+          {{ choice.1 }}
+        </option>
+      {% endfor %}
+    </select>
+    {% if form.grade.errors %}
+      <div class="text-danger">
+        {% for error in form.grade.errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- ฟิลด์ Degree (ระดับปริญญา) -->
+  <div id="degree_div" style="margin-bottom: 15px; display: none;">
+    <label for="id_degree" style="display: block; margin-bottom: 5px;">ระดับ:</label>
+    <select name="degree" id="id_degree"
+            style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                  border: 1px solid #ccc; border-radius: 4px;">
+      <option value="">เลือกระดับปริญญา</option>
+      {% for choice in form.degree.field.choices %}
+        <option value="{{ choice.0 }}" {% if choice.0 == form.degree.value %}selected{% endif %}>
+          {{ choice.1 }}
+        </option>
+      {% endfor %}
+    </select>
+    {% if form.degree.errors %}
+      <div class="text-danger">
+        {% for error in form.degree.errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
     <!-- Script -->
     <script>
       function toggleFields() {
@@ -123,15 +134,21 @@
     </script>
 
     <!-- ฟิลด์ Interest (ความสนใจ) -->
-    <div class="form-group">
-      <label for="id_interest">ความสนใจ:</label>
-      <!-- Tag Input -->
-      <input type="text" id="interest" name="interest" class="form-control" placeholder="กรอกความสนใจ" value="{{ form.interest.value }}" />
-      <small>กรุณากด Enter หรือใช้ปุ่ม "+" เพื่อเพิ่ม</small>
-      <button type="button" id="add-tag-btn" class="btn btn-secondary">+</button>
+    <div style="margin-bottom: 15px;">
+      <label for="interest" style="display: block; margin-bottom: 5px;">ความสนใจ:</label>
+      <div style="display: flex; gap: 8px; max-width: 500px;">
+        <input type="text" id="interest" name="interest"
+              placeholder="กรอกความสนใจ"
+              value="{{ form.interest.value|default:'' }}"
+              style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" />
+        <button type="button" id="add-tag-btn"
+                style="padding: 8px 12px; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">
+          ➕
+        </button>
+      </div>
 
       {% if form.interest.errors %}
-        <div class="text-danger">
+        <div class="text-danger" style="margin-top: 5px;">
           {% for error in form.interest.errors %}
             <p>{{ error }}</p>
           {% endfor %}
@@ -139,6 +156,7 @@
       {% endif %}
     </div>
 
+    
     <!-- เพิ่ม Tagify JS และ CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" />
@@ -194,15 +212,13 @@
     
     <!-- ปุ่มบันทึกข้อมูล -->
     <div>
-      <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+      <button type="submit"
+              style="background-color: #CD4236; color: white; border: none; padding: 10px 20px;
+                    border-radius: 6px; font-weight: bold; cursor: pointer;">
+        บันทึกข้อมูล
+      </button>
     </div>
   </form>
-
-  {% if form.birth.value %}
-    <h1>ความสนใจของคุณคือ: {{ form.birth.value }}</h1>
-  {% else %}
-    <h1>ไม่มีข้อมูลความสนใจ</h1>
-  {% endif %}
 
 
   <script>

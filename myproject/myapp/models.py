@@ -68,7 +68,7 @@ class Camp(models.Model):
 
 
     name = models.CharField(max_length=150,null=True)  # ชื่อผู้จัด
-    email = models.EmailField(unique=True)
+    email = models.EmailField(null=True)
     phone_num = models.CharField(max_length=20,null=True,blank=True)
     camp_name = models.CharField(max_length=200, null=True)
     description_camp = models.TextField(null=True)
@@ -138,8 +138,8 @@ class Camp(models.Model):
     ig = models.URLField(blank=True, null=True)
     facebook = models.URLField(blank=True, null=True)
     line = models.CharField(max_length=100, blank=True, null=True)
-    website = models.URLField(blank=True, null=True)
-    linkcamp = models.URLField(null=True)
+    website = models.URLField(max_length=500, blank=True, null=True)
+    linkcamp = models.URLField(max_length=500,null=True)
     organize_camp = models.CharField(max_length=200, blank=True, null=True)
     has_organized = models.BooleanField( blank=True,default=False)
     detail_activity = models.TextField(null=True)
