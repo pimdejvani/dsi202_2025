@@ -1,4 +1,222 @@
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+
+<!-- เพิ่มการโหลด JavaScript ของ flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 {% extends 'myapp/base.html' %}
+
 {% block content %}
-  <h1>profile!</h1>
+  <h2>โปรไฟล์ของคุณ</h2>
+  
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- ฟิลด์ Username -->
+    <div class="form-group">
+      <label for="id_username">ชื่อผู้ใช้:</label>
+      <input type="text" name="username" value="{{ form.username.value }}" class="form-control" id="id_username">
+      {% if form.username.errors %}
+        <div class="text-danger">
+          {% for error in form.username.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- ฟิลด์ Birth (วันเกิด) -->
+    <div class="form-group">
+      <label for="id_birth">วันเกิด:</label>
+      <!-- ใช้ input type="text" และตั้งค่า readonly เพื่อไม่ให้พิมพ์ -->
+      <input type="text" name="birth" id="birth" value="{{ form.birth.value|date:'Y-m-d' }}" class="form-control" placeholder="yyyy-mm-dd" readonly>
+      {% if form.birth.errors %}
+        <div class="text-danger">
+          {% for error in form.birth.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+
+    <!-- ฟิลด์ Level (ระดับการศึกษา) -->
+    <div class="form-group">
+      <label for="id_level">ระดับการศึกษา:</label>
+      <select name="level" class="form-control" id="id_level">
+        <option value="">เลือกระดับการศึกษา</option>
+        {% for choice in form.level.field.choices %}
+          <option value="{{ choice.0 }}" {% if choice.0 == form.level.value %}selected{% endif %}>
+            {{ choice.1 }}
+          </option>
+        {% endfor %}
+      </select>
+      {% if form.level.errors %}
+        <div class="text-danger">
+          {% for error in form.level.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- ฟิลด์ Grade (เกรด) -->
+    <div class="form-group" id="grade_div" style="display: none;">
+      <label for="id_grade">ชั้นปีที่:</label>
+      <select name="grade" class="form-control" id="id_grade">
+        <option value="">เลือกเกรด</option>
+        {% for choice in form.grade.field.choices %}
+          <option value="{{ choice.0 }}" {% if choice.0 == form.grade.value %}selected{% endif %}>
+            {{ choice.1 }}
+          </option>
+        {% endfor %}
+      </select>
+      {% if form.grade.errors %}
+        <div class="text-danger">
+          {% for error in form.grade.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- ฟิลด์ Degree (ระดับปริญญา) -->
+    <div class="form-group" id="degree_div" style="display: none;">
+      <label for="id_degree">ระดับ:</label>
+      <select name="degree" class="form-control" id="id_degree">
+        <option value="">เลือกระดับปริญญา</option>
+        {% for choice in form.degree.field.choices %}
+          <option value="{{ choice.0 }}" {% if choice.0 == form.degree.value %}selected{% endif %}>
+            {{ choice.1 }}
+          </option>
+        {% endfor %}
+      </select>
+      {% if form.degree.errors %}
+        <div class="text-danger">
+          {% for error in form.degree.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Script -->
+    <script>
+      function toggleFields() {
+        const level = document.getElementById('id_level').value;
+        const gradeDiv = document.getElementById('grade_div');
+        const degreeDiv = document.getElementById('degree_div');
+
+        // ซ่อนทุกอย่างก่อน
+        gradeDiv.style.display = 'none';
+        degreeDiv.style.display = 'none';
+
+        if (level === 'primary' || level === 'secondary') {
+          gradeDiv.style.display = 'block';
+        } else if (level === 'degree') {
+          degreeDiv.style.display = 'block';
+        }
+      }
+
+      // เรียกตอนโหลด และตอนเปลี่ยนค่า
+      document.addEventListener('DOMContentLoaded', toggleFields);
+      document.getElementById('id_level').addEventListener('change', toggleFields);
+    </script>
+
+    <!-- ฟิลด์ Interest (ความสนใจ) -->
+    <div class="form-group">
+      <label for="id_interest">ความสนใจ:</label>
+      <!-- Tag Input -->
+      <input type="text" id="interest" name="interest" class="form-control" placeholder="กรอกความสนใจ" value="{{ form.interest.value }}" />
+      <small>กรุณากด Enter หรือใช้ปุ่ม "+" เพื่อเพิ่ม</small>
+      <button type="button" id="add-tag-btn" class="btn btn-secondary">+</button>
+
+      {% if form.interest.errors %}
+        <div class="text-danger">
+          {% for error in form.interest.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- เพิ่ม Tagify JS และ CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" />
+
+    <script>
+        // ใช้ Tagify เพื่อเปลี่ยน input เป็น tag input
+        var input = document.getElementById('interest');
+        var tagify = new Tagify(input, {
+            whitelist: ["ค่ายสายภาษา", "ค่ายสายสุขภาพ", "ค่ายสายวิศวกรรม", "ค่ายสายดิจิทัล/IT"],  // whitelist ค่ายที่สามารถเลือกได้
+            maxTags: 5,  // จำกัดจำนวน tag
+            dropdown: {
+                enabled: 0, // ไม่แสดง dropdown
+            }
+        });
+
+        // เพิ่ม tag เมื่อกดปุ่ม "+"
+        document.getElementById('add-tag-btn').addEventListener('click', function() {
+            var tagValue = input.value.trim();
+            if (tagValue) {
+                tagify.addTags([tagValue]);
+                input.value = '';  // เคลียร์ช่องกรอกหลังจากเพิ่ม tag
+            }
+        });
+
+        // เพิ่ม tag เมื่อกด Enter
+        input.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                var tagValue = input.value.trim();
+                if (tagValue) {
+                    tagify.addTags([tagValue]);
+                    input.value = '';  // เคลียร์ช่องกรอกหลังจากเพิ่ม tag
+                }
+            }
+        });
+    </script>
+
+    <!-- ฟิลด์ Profile Picture (รูปโปรไฟล์) -->
+    <!-- <div class="form-group">
+      <label for="id_profile_picture">รูปโปรไฟล์:</label>
+      {% if form.profile_picture.value %}
+        <img src="{{ form.profile_picture.value.url }}" alt="Profile Picture" class="img-thumbnail" width="100">
+      {% endif %}
+      <input type="file" name="profile_picture" class="form-control" id="id_profile_picture">
+      {% if form.profile_picture.errors %}
+        <div class="text-danger">
+          {% for error in form.profile_picture.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div> -->
+
+    
+    <!-- ปุ่มบันทึกข้อมูล -->
+    <div>
+      <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+    </div>
+  </form>
+
+  {% if form.birth.value %}
+    <h1>ความสนใจของคุณคือ: {{ form.birth.value }}</h1>
+  {% else %}
+    <h1>ไม่มีข้อมูลความสนใจ</h1>
+  {% endif %}
+
+
+  <script>
+    // การตั้งค่า flatpickr เพื่อแสดงปฏิทิน
+    flatpickr("#birth", {
+        dateFormat: "Y-m-d",  // ใช้รูปแบบวันที่ตรงกับที่ Django คาดหวัง
+        placeholder: "yyyy-mm-dd",  // กำหนด placeholder ให้อยู่ในรูปแบบที่คาดหวัง
+        defaultDate: "{{ form.birth.value|date:'Y-m-d' }}",  // กำหนดค่า default จากข้อมูลใน form
+        enableTime: false,  // ปิดการเลือกเวลา
+        allowInput: false,  // ปิดการกรอกวันที่โดยการพิมพ์
+    });
+</script>
+
+
 {% endblock %}
+
+

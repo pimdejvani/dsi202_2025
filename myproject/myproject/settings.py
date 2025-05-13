@@ -1,6 +1,7 @@
 
 from pathlib import Path
 import environ
+import os
 
 
 env = environ.Env()
@@ -114,11 +115,11 @@ if DEBUG:
     STATICFILES_DIRS = [
         BASE_DIR / "static",
     ]
-
-MEDIA_URL = '/media/'
+MEDIA_URL = '/media/'  # URL ที่ใช้ในการเข้าถึงไฟล์ในโฟลเดอร์ media
 
 # เก็บไฟล์จริงบนดิสก์ที่ <project_root>/media/
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -128,7 +129,10 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 1
-
+CSRF_COOKIE_HTTPONLY = True  # ถ้าเปิดไว้จะไม่สามารถเข้าถึงคุกกี้ CSRF จาก JavaScript
+CSRF_COOKIE_SECURE = False   # ถ้าใช้ HTTPS, จะต้องตั้งเป็น True
+SESSION_COOKIE_AGE = 3600  
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000/peddlecamp/']
 ACCOUNT_SIGNUP_ENABLED = True  # เปิดให้ผู้ใช้สามารถลงทะเบียนได้
 ACCOUNT_EMAIL_REQUIRED = True  # ผู้ใช้ต้องกรอกอีเมล
 ACCOUNT_AUTHENTICATION_METHOD = "email"  # ใช้อีเมลสำหรับการยืนยันตัวตน
@@ -140,7 +144,7 @@ ACCOUNT_LOGIN_ON_SIGNUP = True
 LOGIN_URL = "/accounts/login/"  # หน้า login เมื่อยังไม่ล็อกอิน
 LOGIN_REDIRECT_URL = "/peddlecamp/"  # หลังล็อกอินจะไปที่หน้า peddlecamp
 ACCOUNT_LOGOUT_REDIRECT_URL = "/peddlecamp/"  # หลังออกจากระบบจะไปที่หน้า peddlecamp
-ACCOUNT_SIGNUP_REDIRECT_URL = "peddlecamp/health/"
+ACCOUNT_SIGNUP_REDIRECT_URL = "peddlecamp/"
 
 # Google OAuth settings
 SOCIALACCOUNT_PROVIDERS = {

@@ -3,8 +3,12 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 
+
 class Student(models.Model):
-    LEVEL_CHOICES = [
+    email = models.EmailField()  # ใช้ email เป็นตัวระบุหลัก
+    username = models.CharField(max_length=150,blank=True)  # ชื่อผู้ใช้
+    birth = models.DateField(blank=True, null=True)  # วันเกิด
+    level = models.CharField(max_length=20, choices=[
         ('primary', 'ประถม'),
         ('secondary', 'มัธยม'),
         ('vocational_minor', 'ปวช'),
@@ -12,31 +16,22 @@ class Student(models.Model):
         ('drop', 'เด็กซิ่ว'),
         ('degree', 'ปริญญา'),
         ('other', 'บุคคลทั่วไป'),
-    ]
-    
-    GRADE_CHOICES = [
+    ], blank=True, null=True)  # ระดับการศึกษา
+    grade = models.CharField(max_length=1, choices=[
         ('1', '1'),
         ('2', '2'),
         ('3', '3'),
         ('4', '4'),
         ('5', '5'),
         ('6', '6'),
-    ]
-    
-    DEGREE_CHOICES = [
+    ], blank=True, null=True)  # เกรด (1-6)
+    degree = models.CharField(max_length=20, choices=[
         ('bachelor', 'ตรี'),
         ('master', 'โท'),
         ('doctorate', 'เอก'),
-    ]
-
-    username = models.CharField(max_length=150)
-    email = models.EmailField()
-    birth = models.DateField(blank=True, null=True)  # วันเกิด
-    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, blank=True, null=True)  # ระดับการศึกษา
-    grade = models.CharField(max_length=1, choices=GRADE_CHOICES, blank=True, null=True)  # เกรด (1-6)
-    degree = models.CharField(max_length=20, blank=True, null=True, choices=DEGREE_CHOICES)  # ระดับปริญญา
-    interest = models.TextField(blank=True, null=True)
-    
+    ], blank=True, null=True)  # ระดับปริญญา
+    interest = models.TextField(blank=True, null=True)  # ความสนใจ
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)  # รูปโปรไฟล์
 
     def clean(self):
         super().clean()
@@ -69,12 +64,11 @@ class Student(models.Model):
 
 
 
-
 class Camp(models.Model):
 
 
     name = models.CharField(max_length=150,null=True)  # ชื่อผู้จัด
-    email = models.EmailField(null=True)
+    email = models.EmailField(unique=True)
     phone_num = models.CharField(max_length=20,null=True,blank=True)
     camp_name = models.CharField(max_length=200, null=True)
     description_camp = models.TextField(null=True)
@@ -146,8 +140,8 @@ class Camp(models.Model):
     line = models.CharField(max_length=100, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     linkcamp = models.URLField(null=True)
-    organize_camp = models.CharField(max_length=200)
-    has_organized = models.BooleanField(null=True)
+    organize_camp = models.CharField(max_length=200, blank=True, null=True)
+    has_organized = models.BooleanField( blank=True,default=False)
     detail_activity = models.TextField(null=True)
     poster = models.ImageField(upload_to='camp_posters/', blank=True, null=True)
     prove = models.BooleanField(default=False)
@@ -169,6 +163,11 @@ class Camp(models.Model):
         if self.activity_mode == 'online':
             self.place = None
 
+            
+        if self.age_condition == 'no_limit':
+            self.min_age = 0
+
+
         if self.primary and self.primary_grade_condition == 'all':
             self.primary_grade_from = 1
             self.primary_grade_to = 6
@@ -185,9 +184,9 @@ class Camp(models.Model):
         if self.primary and self.primary_grade_condition == 'from':
             if not self.primary_grade_from or not self.primary_grade_to:
                 raise ValidationError('กรุณากรอกเกรดจากและเกรดถึงสำหรับประถม')
-            if self.primary_grade_from < 1 or self.primary_grade_from > 6:
+            if self.primary_grade_from < 0 or self.primary_grade_from > 6:
                 raise ValidationError('กรอกเกรดจากต้องอยู่ระหว่าง 1-6')
-            if self.primary_grade_to < 1 or self.primary_grade_to > 6:
+            if self.primary_grade_to < 0 or self.primary_grade_to > 6:
                 raise ValidationError('กรอกเกรดถึงต้องอยู่ระหว่าง 1-6')
             if self.primary_grade_from > self.primary_grade_to:
                 raise ValidationError('เกรดจากต้องน้อยกว่าเกรดถึง')
@@ -195,9 +194,9 @@ class Camp(models.Model):
         if self.secondary and self.secondary_grade_condition == 'from':
             if not self.secondary_grade_from or not self.secondary_grade_to:
                 raise ValidationError('กรุณากรอกเกรดจากและเกรดถึงสำหรับมัธยม')
-            if self.secondary_grade_from < 1 or self.secondary_grade_from > 6:
+            if self.secondary_grade_from < 0 or self.secondary_grade_from > 6:
                 raise ValidationError('กรอกเกรดจากต้องอยู่ระหว่าง 1-6')
-            if self.secondary_grade_to < 1 or self.secondary_grade_to > 6:
+            if self.secondary_grade_to < 0 or self.secondary_grade_to > 6:
                 raise ValidationError('กรอกเกรดถึงต้องอยู่ระหว่าง 1-6')
             if self.secondary_grade_from > self.secondary_grade_to:
                 raise ValidationError('เกรดจากต้องน้อยกว่าเกรดถึง')

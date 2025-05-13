@@ -4,14 +4,11 @@ from .models import Student, Camp
 
 # การแสดงข้อมูลของ Student
 class StudentAdmin(admin.ModelAdmin):
-    list_display = (
-        'username', 'email', 'birth', 'level', 'grade', 'degree', 'interest'
-    )  # ฟิลด์ที่จะแสดงในหน้า admin list
-    list_filter = ('level', 'degree')  # ฟิลด์ที่สามารถกรองได้
-    search_fields = ('username', 'email')  # ฟิลด์ที่สามารถค้นหาได้
-    ordering = ('username',)  # การเรียงลำดับตาม username
+    list_display = ('username', 'email', 'birth', 'level', 'grade', 'degree', 'interest', 'profile_picture')
+    list_filter = ('level', 'degree')  
+    search_fields = ('username', 'email')  
+    ordering = ('username',)  
 
-    # การแสดงข้อมูลในหน้า detail view
     fieldsets = (
         (None, {
             'fields': ('username', 'email', 'birth')
@@ -21,6 +18,9 @@ class StudentAdmin(admin.ModelAdmin):
         }),
         ('ความสนใจ', {
             'fields': ('interest',)
+        }),
+        ('รูปโปรไฟล์', {
+            'fields': ('profile_picture',)
         }),
     )
 

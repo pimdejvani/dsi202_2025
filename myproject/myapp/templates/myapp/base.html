@@ -46,7 +46,7 @@
         <!-- ปุ่มโปรไฟล์ -->
         <div class="relative ml-6 inline-block">
           <a href="{% if user.is_authenticated %}#{% else %}{% url 'login' %}{% endif %}" class="inline-block">
-            <img src="{% static 'images/profile.png' %}" alt="Profile" class="h-8 w-8 rounded-full" />
+            <img src="{% static 'images/profile.jpg' %}" alt="Profile" class="h-8 w-8 rounded-full" />
           </a>
 
           {% if user.is_authenticated %}
