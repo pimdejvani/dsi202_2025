@@ -1,4 +1,275 @@
 {% extends 'myapp/base.html' %}
 {% block content %}
-  <h1>personalize!</h1>
+
+  <div class="max-w-xl mx-auto mt-10 text-center">
+    <h1 class="text-xl font-bold mb-4">ค่ายเรียงตามวัน (เก่าที่สุด)</h1>
+
+    <button id="show-btn" class="px-6 py-2 bg-[#003049] text-white rounded hover:bg-blue-800">
+      แสดงค่าย 5 อันดับแรก (เก่าที่สุด)
+    </button>
+
+    <div id="camp-container" class="mt-6 hidden text-left"></div>
+  </div>
+
+
+
+  <!-- ปุ่มใหม่: สำหรับค่ายประเภท other -->
+  <button id="show-other-btn" class="mt-4 px-6 py-2 bg-[#CD4236] text-white rounded hover:bg-red-700">
+    แสดงค่ายประเภทอื่น ๆ (5 อันดับ)
+  </button>
+
+  <!-- พื้นที่แสดงค่าย other -->
+  <div id="other-camp-container" class="mt-6 hidden text-left"></div>
+
+  {% if user.is_authenticated and student_birth %}
+    <p class="mt-10 text-lg font-semibold text-gray-700">
+      วันเกิดของคุณ: {{ student_birth|date:"j F Y" }}
+    </p>
+
+    <button id="show-young-btn" class="mt-4 px-6 py-2 bg-red-600 text-white rounded hover:bg-red-800">
+      แสดงค่ายที่คุณอายุน้อยกว่าเกณฑ์ขั้นต่ำ (5 อันดับ)
+    </button>
+
+    <div id="young-camp-container" class="mt-6 hidden text-left"></div>
+  {% endif %}
+
+  {% if user.is_authenticated and student_interest %}
+    <button id="show-interest-btn" class="mt-4 px-6 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">
+      แสดงค่ายที่ตรงกับความสนใจของคุณ
+    </button>
+
+    <div id="interest-camp-container" class="mt-6 hidden text-left"></div>
+  {% endif %}
+
+
+  <script>
+    const rawCamps = [
+      {% for camp in all_camps %}
+        {
+          id: {{ camp.id }},
+          name: "{{ camp.camp_name|escapejs }}",
+          final_date: "{{ camp.final_date|date:'Y-m-d' }}",
+          type: "{{ camp.typeof_camp }}",
+          prove: {{ camp.prove|yesno:"true,false" }}
+        }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ];
+
+    const MONTHS_TH = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+
+    function formatThaiDate(dateStr) {
+      const date = new Date(dateStr);
+      const day = date.getDate();
+      const month = MONTHS_TH[date.getMonth()];
+      const year = date.getFullYear();
+      return `${day} ${month} ${year}`;
+    }
+
+    // ======= ปุ่มที่ 1: แสดงทั้งหมด (5 อันดับแรกเรียงจากวันเก่าสุด) =======
+    const btn = document.getElementById("show-btn");
+    const container = document.getElementById("camp-container");
+
+    btn.addEventListener("click", () => {
+      const sorted = rawCamps
+        .slice()
+        .sort((a, b) => new Date(a.final_date) - new Date(b.final_date))
+        .slice(0, 5);
+
+      container.innerHTML = sorted.map(c => `
+        <div class="border p-4 mb-4 rounded shadow">
+          <p><strong>ID:</strong> ${c.id}</p>
+          <p><strong>ชื่อค่าย:</strong> ${c.name}</p>
+          <p><strong>วันสิ้นสุด:</strong> ${formatThaiDate(c.final_date)}</p>
+          <p><strong>ประเภท:</strong> ${c.type}</p>
+        </div>
+      `).join('');
+
+      container.classList.remove("hidden");
+    });
+
+    // ======= ปุ่มที่ 2: แสดงเฉพาะประเภท other =======
+    const otherBtn = document.getElementById("show-other-btn");
+    const otherContainer = document.getElementById("other-camp-container");
+
+    otherBtn.addEventListener("click", () => {
+      const sortedOther = rawCamps
+        .filter(c => c.type === 'other')
+        .sort((a, b) => new Date(a.final_date) - new Date(b.final_date))
+        .slice(0, 5);
+
+      if (sortedOther.length === 0) {
+        otherContainer.innerHTML = "<p class='text-gray-600'>ไม่พบค่ายประเภทอื่น ๆ</p>";
+      } else {
+        otherContainer.innerHTML = sortedOther.map(c => `
+          <div class="border p-4 mb-4 rounded shadow">
+            <p><strong>ID:</strong> ${c.id}</p>
+            <p><strong>ชื่อค่าย:</strong> ${c.name}</p>
+            <p><strong>วันสิ้นสุด:</strong> ${formatThaiDate(c.final_date)}</p>
+            <p><strong>ประเภท:</strong> ${c.type}</p>
+          </div>
+        `).join('');
+      }
+
+      otherContainer.classList.remove("hidden");
+    });
+  </script>
+
+
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const rawCamps = [
+        {% for camp in all_camps %}
+          {
+            id: {{ camp.id }},
+            name: "{{ camp.camp_name|escapejs }}",
+            final_date: "{{ camp.final_date|date:'Y-m-d' }}",
+            type: "{{ camp.typeof_camp }}",
+            min_age: {{ camp.min_age|default:"null" }}
+          }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ];
+
+      const MONTHS_TH = [
+        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+      ];
+
+      function formatThaiDate(dateStr) {
+        const date = new Date(dateStr);
+        const day = date.getDate();
+        const month = MONTHS_TH[date.getMonth()];
+        const year = date.getFullYear();
+        return `${day} ${month} ${year}`;
+      }
+
+      function calculateAge(birthDateStr, targetDateStr) {
+        const birth = new Date(birthDateStr);
+        const target = new Date(targetDateStr);
+        let age = target.getFullYear() - birth.getFullYear();
+        const mDiff = target.getMonth() - birth.getMonth();
+        if (mDiff < 0 || (mDiff === 0 && target.getDate() < birth.getDate())) {
+          age--;
+        }
+        return age;
+      }
+
+      const birthDate = {% if student_birth %}"{{ student_birth|date:'Y-m-d' }}"{% else %}null{% endif %};
+
+      const youngBtn = document.getElementById("show-young-btn");
+      const youngContainer = document.getElementById("young-camp-container");
+
+      if (youngBtn && birthDate) {
+        youngBtn.addEventListener("click", () => {
+          const filtered = rawCamps
+            .map(c => {
+              const age = calculateAge(birthDate, c.final_date);
+              return { ...c, student_age: age };
+            })
+            .filter(c => c.min_age !== null && c.student_age < c.min_age)
+            .sort((a, b) => new Date(a.final_date) - new Date(b.final_date))
+            .slice(0, 5);
+
+          if (filtered.length === 0) {
+            youngContainer.innerHTML = "<p class='text-gray-600'>ไม่พบค่ายที่คุณยังไม่ถึงเกณฑ์อายุขั้นต่ำ</p>";
+          } else {
+            youngContainer.innerHTML = filtered.map(c => `
+              <div class="border p-4 mb-4 rounded shadow">
+                <p><strong>ID:</strong> ${c.id}</p>
+                <p><strong>ชื่อค่าย:</strong> ${c.name}</p>
+                <p><strong>วันสิ้นสุด:</strong> ${formatThaiDate(c.final_date)}</p>
+                <p><strong>เกณฑ์ขั้นต่ำ:</strong> ${c.min_age} ปี</p>
+                <p class="text-red-600 font-semibold">คุณจะอายุ ${c.student_age} ปีในวันนั้น</p>
+              </div>
+            `).join('');
+          }
+
+          youngContainer.classList.remove("hidden");
+        });
+      }
+    });  // ❗ ปิด document.addEventListener
+  </script>  <!-- ❗ ปิด <script> อย่างถูกต้อง -->
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const rawCamps = [
+        {% for camp in all_camps %}
+          {
+            id: {{ camp.id }},
+            name: "{{ camp.camp_name|escapejs }}",
+            final_date: "{{ camp.final_date|date:'Y-m-d' }}",
+            type: "{{ camp.typeof_camp }}",
+            description: `{{ camp.description_camp|default:""|escapejs }}`,
+            detail: `{{ camp.detail_activity|default:""|escapejs }}`
+          }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ];
+
+      const birthDate = {% if student_birth %}"{{ student_birth|date:'Y-m-d' }}"{% else %}null{% endif %};
+      const interestRaw = {% if student_interest %}{{ student_interest|safe }}{% else %}[] {% endif %};
+
+      const interestWords = interestRaw.map(obj => obj.value.trim());
+
+      const formatThaiDate = (dateStr) => {
+        const MONTHS_TH = [
+          "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+          "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+        ];
+        const date = new Date(dateStr);
+        const day = date.getDate();
+        const month = MONTHS_TH[date.getMonth()];
+        const year = date.getFullYear();
+        return `${day} ${month} ${year}`;
+      };
+
+      const interestBtn = document.getElementById("show-interest-btn");
+      const interestContainer = document.getElementById("interest-camp-container");
+
+      if (interestBtn && interestWords.length > 0) {
+        interestBtn.addEventListener("click", () => {
+          const scored = rawCamps.map(camp => {
+            const foundWords = interestWords.filter(word =>
+              camp.description.includes(word) || camp.detail.includes(word)
+            );
+
+            return {
+              ...camp,
+              score: foundWords.length,
+              matched: foundWords
+            };
+          });
+
+          const topCamps = scored
+            .filter(c => c.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 10);
+
+          if (topCamps.length === 0) {
+            interestContainer.innerHTML = "<p class='text-gray-600'>ไม่พบค่ายที่ตรงกับความสนใจของคุณ</p>";
+          } else {
+            interestContainer.innerHTML = topCamps.map(c => `
+              <div class="border p-4 mb-4 rounded shadow">
+                <p><strong>ID:</strong> ${c.id}</p>
+                <p><strong>ชื่อค่าย:</strong> ${c.name}</p>
+                <p><strong>วันสิ้นสุด:</strong> ${formatThaiDate(c.final_date)}</p>
+                <p><strong>ประเภท:</strong> ${c.type}</p>
+                <p class="text-green-700 font-semibold">คำที่พบ: ${c.matched.join(", ")}</p>
+              </div>
+            `).join('');
+          }
+
+          interestContainer.classList.remove("hidden");
+        });
+      }
+    });
+  </script>
+
+
+
 {% endblock %}
+
+

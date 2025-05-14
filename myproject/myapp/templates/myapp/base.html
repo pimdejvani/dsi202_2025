@@ -45,10 +45,9 @@
 
         <!-- ปุ่มโปรไฟล์ -->
         <div class="relative ml-6 inline-block">
-          <a href="{% if user.is_authenticated %}#{% else %}{% url 'login' %}{% endif %}" class="inline-block">
+          <a id="profile-btn" href="{% if user.is_authenticated %}#{% else %}{% url 'login' %}{% endif %}" class="inline-block">
             <img src="{% static 'images/profile.jpg' %}" alt="Profile" class="h-8 w-8 rounded-full" />
           </a>
-
           {% if user.is_authenticated %}
           <!-- เมนูดรอปดาวน์เมื่อผู้ใช้ล็อกอินแล้ว -->
           <div id="dropdown" class="absolute right-0 hidden bg-white shadow-lg rounded mt-2 w-48">
@@ -301,7 +300,25 @@
       </div>
     </div>
     
-  
+    <script>
+    const profileBtn = document.getElementById("profile-btn");
+    const dropdown = document.getElementById("dropdown");
+
+    if (profileBtn && dropdown) {
+      profileBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        dropdown.classList.toggle("hidden");
+      });
+
+      window.addEventListener("click", function (event) {
+        // ปิด dropdown ถ้าคลิกนอกเมนู
+        if (!profileBtn.contains(event.target) && !dropdown.contains(event.target)) {
+          dropdown.classList.add("hidden");
+        }
+      });
+    }
+  </script>
+
   </header>
   <!-- MAIN CONTENT -->
   <main class="flex-grow container mx-auto p-4">

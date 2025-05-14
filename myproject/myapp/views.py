@@ -1,7 +1,8 @@
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from .forms import CampForm ,StudentProfileForm
-from .models import Student
+from .models import Student,Camp
+from django.utils import timezone
 
 
 from django.contrib.auth.views import LoginView
@@ -58,10 +59,26 @@ class DateCampView(TemplateView):
     template_name = 'myapp/category_date.html'
 
 
-# 3. หน้าค้นหาตัวตน
 class PersonalizePageView(TemplateView):
     template_name = 'myapp/personalize.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = timezone.now().date()
+
+        # ดึงทุกค่ายที่ยังไม่หมดเขตรับสมัคร
+        all_camps = Camp.objects.filter(final_date__gte=today)
+
+        context['all_camps'] = all_camps
+
+        if self.request.user.is_authenticated:
+            student = Student.objects.filter(email=self.request.user.email).first()
+            context['student_birth'] = student.birth if student else None
+            context['student_interest'] = student.interest if student else None
+        return context
+    
+
+            
 
 # 4. หน้าโปรไฟล์
 class ProfilePageView(TemplateView):
