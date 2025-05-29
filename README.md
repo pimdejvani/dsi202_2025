@@ -69,8 +69,8 @@ cd dsi202_2025
 
 ### 4.3 สร้างไฟล์ `.env`
 ```dotenv
-SECRET_KEY='your_secret_key_here'
-DEBUG=True
+GOOGLE_CLIENT_ID="your_google_client_id_here"
+GOOGLE_CLIENT_SECRET="your_secret_key_here"
 ```
 
 ### 4.4 Build และ Run Docker
