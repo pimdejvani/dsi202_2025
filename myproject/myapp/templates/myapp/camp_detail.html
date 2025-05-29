@@ -1,0 +1,336 @@
+{% extends 'myapp/base.html' %}
+{% block content %}
+{% load static %}
+  <div style="max-width: 1080px;" class="mx-auto w-full bg-white rounded-2xl shadow p-5 mt-6">
+    <div class="mx-auto w-full max-w-[840px] bg-white rounded-2xl shadow overflow-hidden mt-6">
+      {% if camp.upload_file %}
+        <img src="{{ camp.upload_file.url }}" alt="camp image" class="w-full h-auto" />
+      {% else %}
+        <div class="w-full bg-gray-100 flex items-center justify-center text-gray-400" style="aspect-ratio: 16/9;">ไม่มีรูปภาพ</div>
+      {% endif %}
+      <!-- ... content ... -->
+    </div>
+
+    <br>
+    <h1 class="text-2xl font-extrabold text-center text-black mb-5">{{ camp.camp_name }}</h1>
+    <!-- Status bar (js จะ update สี + ข้อความ) -->
+    <div class="camp-item mt-7 flex justify-center" data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+      <span class="color-indicator rounded-md px-4 py-2 flex items-center justify-center text-base font-semibold text-white transition-colors duration-300 w-fit">
+        <span class="status-value">กำลังโหลด...</span>
+      </span>
+    </div>
+    <br>
+
+    <!-- 1. วันกิจกรรม -->
+    <div class="mb-4">
+      <div class="font-bold text-[#CD4236]">วันกิจกรรม</div>
+      <div class="text-black mt-1" id="event-date"></div>
+    </div>
+
+    <!-- 2. วันสิ้นสุดการรับสมัคร -->
+    <div class="mb-4">
+      <div class="font-bold text-[#CD4236]">วันสิ้นสุดการรับสมัคร</div>
+      <div class="text-black mt-1" id="final-date"></div>
+    </div>
+
+    <!-- 3. จำนวนผู้สมัคร -->
+    <div class="mb-4">
+      <div class="font-bold text-[#CD4236]">จำนวนผู้สมัครไม่เกิน</div>
+      <div class="text-black mt-1">{{ camp.num_candi }} คน</div>
+    </div>
+
+    <!-- 4. เงื่อนไขการรับสมัคร -->
+    <div>
+      <div class="font-bold text-[#CD4236]">เงื่อนไขการรับสมัคร</div>
+      <div class="text-black mt-1" id="condition-list"></div>
+    </div>
+    <br>
+    <!-- ประเภทกิจกรรม -->
+    <div class="mb-4">
+      <div class="font-bold text-[#CD4236]">ประเภทกิจกรรม</div>
+      <div class="text-black mt-1" id="activity-mode"></div>
+    </div>
+
+    <!-- จัดกิจกรรมโดย -->
+    <div class="mb-4">
+      <div class="font-bold text-[#CD4236]">จัดกิจกรรมโดย</div>
+      <div class="text-black mt-1" id="organize-by"></div>
+    </div>
+
+    {% if camp.linkcamp %}
+      <a href="{{ camp.linkcamp }}" target="_blank" rel="noopener"
+        class="mx-auto block bg-[#003049] hover:bg-[#00223a] text-white font-bold rounded-xl transition
+                min-w-[120px] max-w-[300px] px-12 h-[80px] flex items-center justify-center text-center text-xl">
+        สมัครกิจกรรมนี้
+      </a>
+    {% endif %}
+    <br>
+
+    <div class="mb-4">
+      <div class="font-bold text-[#CD4236]">รายละเอียดกิจกรรม</div>
+      <div class="text-black mt-1 whitespace-pre-line">{{ camp.detail_activity|default:"-" }}</div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+
+  <script>
+    const activity_mode = "{{ camp.activity_mode }}";      // 'online' หรือ 'onsite'
+    const place = "{{ camp.place|default:'' }}";           // สถานที่
+    const organize_camp = "{{ camp.organize_camp|default:'' }}"; // ชื่อผู้จัด
+    const has_organized = {{ camp.has_organized|yesno:'true,false' }}; // true/false
+
+    function getActivityText(mode, place) {
+      if (mode === "online") return "กิจกรรมออนไลน์";
+      if (mode === "onsite") {
+        return place ? `กิจกรรมออนไซต์ ที่ ${place}` : "กิจกรรมออนไซต์";
+      }
+      return "-";
+    }
+    function getOrganizerText(org, hasOrg) {
+      if (!org) return "-";
+      return hasOrg ? `${org} (เคยจัดกิจกรรมมาก่อน)` : org;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("activity-mode").innerText = getActivityText(activity_mode, place);
+      document.getElementById("organize-by").innerText = getOrganizerText(organize_camp, has_organized);
+    });
+  </script>
+
+
+
+  <script>
+    // ========== กำหนดข้อมูล ================
+    // Django จะใส่ค่าเหล่านี้ใน template context
+    const start_date = "{{ camp.start_date|date:'Y-m-d' }}";
+    const end_date = "{{ camp.end_date|date:'Y-m-d' }}";
+    const final_date = "{{ camp.final_date|date:'Y-m-d' }}";
+    const age_condition = "{{ camp.age_condition|default:'' }}";
+    const min_age = {{ camp.min_age|default:'null' }};
+
+    // เงื่อนไขแต่ละชั้น
+    const campCondition = {
+      primary: {{ camp.primary|yesno:'true,false' }},
+      primary_grade_from: {{ camp.primary_grade_from|default:'null' }},
+      primary_grade_to: {{ camp.primary_grade_to|default:'null' }},
+      primary_grade_condition: "{{ camp.primary_grade_condition|default:'' }}",
+
+      secondary: {{ camp.secondary|yesno:'true,false' }},
+      secondary_grade_from: {{ camp.secondary_grade_from|default:'null' }},
+      secondary_grade_to: {{ camp.secondary_grade_to|default:'null' }},
+      secondary_grade_condition: "{{ camp.secondary_grade_condition|default:'' }}",
+
+      vocational_minor: {{ camp.vocational_minor|yesno:'true,false' }},
+      vocational_major: {{ camp.vocational_major|yesno:'true,false' }},
+      drop: {{ camp.drop|yesno:'true,false' }},
+
+      degree: {{ camp.degree|yesno:'true,false' }},
+      degree_from: "{{ camp.degree_from|default:'' }}",
+      degree_to: "{{ camp.degree_to|default:'' }}",
+      degree_grade_condition: "{{ camp.degree_grade_condition|default:'' }}",
+
+      other: {{ camp.other|yesno:'true,false' }},
+    };
+
+    // ========== ฟังก์ชันช่วยแปลงวันที่ ================
+    const MONTHS_TH = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+
+    function thaiDate(dateStr) {
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d)) return "วันที่ไม่ถูกต้อง";
+        const day = d.getDate();
+        const month = MONTHS_TH[d.getMonth()];
+        const year = d.getFullYear();
+        return `${day} ${month} ${year}`;
+      } catch {
+        return "วันที่ไม่ถูกต้อง";
+      }
+    }
+
+    // ========== กำหนด "วันกิจกรรม" ================
+    function activityDateText(start, end) {
+      if (start === end || !end) return thaiDate(start);
+      // แยกปีกรณีข้ามปี
+      const s = new Date(start);
+      const e = new Date(end);
+      if (isNaN(s) || isNaN(e)) return "วันที่ไม่ถูกต้อง";
+      const s_day = s.getDate(), s_month = MONTHS_TH[s.getMonth()], s_year = s.getFullYear();
+      const e_day = e.getDate(), e_month = MONTHS_TH[e.getMonth()], e_year = e.getFullYear();
+      if (s_year === e_year) {
+        return `${s_day} ${s_month} - ${e_day} ${e_month} ${e_year}`;
+      } else {
+        return `${s_day} ${s_month} ${s_year} - ${e_day} ${e_month} ${e_year}`;
+      }
+    }
+
+    // ========== สร้างเงื่อนไขการรับสมัคร ================
+    function renderCondition(c) {
+      let result = [];
+      // 1. ประถม
+      if (c.primary) {
+        if (c.primary_grade_from && c.primary_grade_to) {
+          if (c.primary_grade_from === c.primary_grade_to) {
+            result.push(`ประถมศึกษาปีที่ ${c.primary_grade_from}`);
+          } else {
+            result.push(`ประถมศึกษาปีที่ ${c.primary_grade_from} ถึง ${c.primary_grade_to}`);
+          }
+        } else {
+          result.push("ประถมศึกษา");
+        }
+      }
+      // 2. มัธยม
+      if (c.secondary) {
+        if (c.secondary_grade_from && c.secondary_grade_to) {
+          if (c.secondary_grade_from === c.secondary_grade_to) {
+            result.push(`มัธยมศึกษาปีที่ ${c.secondary_grade_from}`);
+          } else {
+            result.push(`มัธยมศึกษาปีที่ ${c.secondary_grade_from} ถึง ${c.secondary_grade_to}`);
+          }
+        } else {
+          result.push("มัธยมศึกษา");
+        }
+      }
+      // 3. อาชีวะ
+      if (c.vocational_minor) result.push("ปวช.");
+      if (c.vocational_major) result.push("ปวส.");
+      // 4. เด็กดรอป
+      if (c.drop) result.push("เด็กดรอป");
+      // 5. ปริญญา
+      if (c.degree) {
+        if (c.degree_from && c.degree_to) {
+          if (c.degree_from === c.degree_to) {
+            result.push(`ระดับ${degreeTH(c.degree_from)}`);
+          } else {
+            result.push(`ระดับ${degreeTH(c.degree_from)} ถึง ${degreeTH(c.degree_to)}`);
+          }
+        } else {
+          result.push("ระดับปริญญา");
+        }
+      }
+      // 6. บุคคลทั่วไป
+      if (c.other) result.push("บุคคลทั่วไป");
+
+      let main = result.length ? result.join(" / ") : "-";
+
+      // เพิ่มอายุตั้งแต่ ... ปีขึ้นไป
+      if (age_condition === "from" && min_age) {
+        main += ` / อายุตั้งแต่ ${min_age} ปีขึ้นไป`;
+      }
+      return main;
+    }
+
+    // ฟังก์ชันแปลงรหัสปริญญา
+    function degreeTH(key) {
+      if (key === "bachelor") return "ปริญญาตรี";
+      if (key === "master") return "ปริญญาโท";
+      if (key === "doctorate") return "ปริญญาเอก";
+      return "";
+    }
+
+
+    // ========== แสดงผล ===========
+    document.addEventListener("DOMContentLoaded", function () {
+      // 1. วันกิจกรรม
+      document.getElementById("event-date").innerText = activityDateText(start_date, end_date);
+      // 2. วันสิ้นสุดการรับสมัคร
+      document.getElementById("final-date").innerText = thaiDate(final_date);
+      // 3. เงื่อนไขการรับสมัคร
+      document.getElementById("condition-list").innerText = renderCondition(campCondition);
+    });
+  </script>
+
+
+
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const MONTHS_TH = [
+        "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+        "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+      ];
+
+      function formatThaiDate(dateStr) {
+        try {
+          const date = new Date(dateStr);
+          if (isNaN(date)) throw new Error("Invalid date");
+          const day = date.getDate();
+          const month = MONTHS_TH[date.getMonth()];
+          const year = date.getFullYear();
+          return `${day} ${month} ${year}`;
+        } catch {
+          return "วันที่ไม่ถูกต้อง";
+        }
+      }
+
+      function getDaysUntil(dateStr) {
+        try {
+          const today = new Date();
+          const target = new Date(dateStr);
+          if (isNaN(target)) throw new Error("Invalid date");
+          const diffTime = target - today;
+          return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        } catch {
+          return NaN;
+        }
+      }
+
+      function getStatusAndColor(daysUntil) {
+        if (isNaN(daysUntil)) return { status: "วันที่ไม่ถูกต้อง", color: "#808080" }; // Gray for invalid dates
+        if (daysUntil < 0) return { status: "ปิดรับสมัคร", color: "#000000" };
+        if (daysUntil === 0) return { status: "รับสมัครวันสุดท้าย", color: "#CD4236" };
+        if (daysUntil === 1) return { status: "รับสมัครภายใน 1 วัน", color: "#E8553E" };
+        if (daysUntil === 2) return { status: "รับสมัครภายใน 2 วัน", color: "#F47C48" };
+        if (daysUntil === 3) return { status: "รับสมัครภายใน 3 วัน", color: "#FBB061" };
+        if (daysUntil <= 6) return { status: "รับสมัครภายในสัปดาห์นี้", color: "#FFD27A" };
+        return { status: "เปิดรับสมัครอยู่", color: "#255681" };
+      }
+
+      document.querySelectorAll('.camp-item').forEach(item => {
+        const finalDate = item.dataset.finalDate;
+        const days = getDaysUntil(finalDate);
+        const { status, color } = getStatusAndColor(days);
+
+        // Update status text
+        const statusElement = item.querySelector('.status-value');
+        if (statusElement) {
+          statusElement.textContent = status;
+          // Optional: Style status text based on status
+          statusElement.style.color = "#FFFFFF";
+        }
+
+        // Update color indicator
+        const colorElement = item.querySelector('.color-indicator');
+        if (colorElement) {
+          colorElement.style.backgroundColor = color;
+        }
+      });
+    });
+  </script>
+
+{% endblock %}

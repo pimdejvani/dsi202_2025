@@ -1,0 +1,64 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-10 p-4 bg-white rounded shadow">
+  <h1 class="text-2xl font-bold mb-6 text-center">ค่ายสายสถาปัตย์</h1>
+
+  <div id="camp-list">
+    {% for camp in all_camps|slice:":10" %}
+      <a href="{% url 'myapp:camp_detail' camp.id %}"
+         class="block border border-gray-300 hover:bg-gray-100 transition rounded mb-4 camp-item {% if forloop.counter > 5 %}hidden{% endif %}">
+        <div class="md:flex p-4 gap-4">
+          <!-- รูป -->
+          <div class="flex-shrink-0">
+            {% if camp.upload_file %}
+              <img src="{{ camp.upload_file.url }}" alt="{{ camp.camp_name }}"
+                   class="w-full max-w-[300px] md:max-w-[350px] max-h-[400px] object-contain mx-auto" />
+            {% else %}
+              <div class="w-[200px] h-[150px] bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+                ไม่มีรูป
+              </div>
+            {% endif %}
+          </div>
+          <!-- รายละเอียด -->
+          <div class="flex-1">
+            <div class="camp-item mt-4 md:mt-2 flex justify-center" data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+              <span class="color-indicator rounded-md px-4 py-2 flex items-center justify-center text-base font-semibold text-white transition-colors duration-300 w-fit">
+                <span class="status-value">กำลังโหลด...</span>
+              </span>
+            </div>
+            <div class="h-1"></div>
+            <h2 class="text-lg font-bold">{{ camp.camp_name }}</h2>
+            <p class="text-sm text-gray-700 mb-1">{{ camp.description_camp|truncatewords:20 }}</p>
+            <p class="text-sm text-gray-600">วันสิ้นสุด: {{ camp.final_date|date:"j F Y" }}</p>
+            <p class="text-sm">💰 ราคา: {{ camp.price|default:"ฟรี" }}</p>
+            <p class="text-sm">📍 รูปแบบ: {{ camp.get_activity_mode_display }}</p>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+
+  {% if all_camps|length > 5 %}
+    <div class="text-center mt-4">
+      <button id="show-more-btn" class="px-6 py-2 bg-[#CD4236] text-white rounded hover:bg-blue-800">
+        ดูเพิ่มเติม
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+<!-- ✅ Script เติมสถานะ และดูเพิ่มเติม -->
+<script src="{% static 'js/list_camp.js' %}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('show-more-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#camp-list .camp-item.hidden').forEach(el => el.classList.remove('hidden'));
+      btn.style.display = 'none';
+    });
+  });
+</script>
+{% endblock %}

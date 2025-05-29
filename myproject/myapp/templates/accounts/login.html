@@ -1,0 +1,63 @@
+{% load socialaccount %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">Login</h2>
+    <form method="post" class="space-y-4 text-base">
+      {% csrf_token %}
+
+      <!-- Username -->
+      <div>
+        <label for="id_login" class="block mb-1 text-gray-700 font-medium">Username</label>
+        <input type="text" name="login" id="id_login"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+               required autocomplete="username" value="{{ form.login.value|default_if_none:'' }}">
+        {% if form.login.errors %}
+          <div class="text-sm text-red-600">{{ form.login.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label for="id_password" class="block mb-1 text-gray-700 font-medium">Password</label>
+        <input type="password" name="password" id="id_password"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+               required autocomplete="current-password">
+        {% if form.password.errors %}
+          <div class="text-sm text-red-600">{{ form.password.errors|striptags }}</div>
+        {% endif %}
+      </div>
+
+      <button type="submit"
+        class="w-full py-2 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition mt-2">
+        Log In
+      </button>
+    </form>
+
+    <div class="my-6">
+      <a href="{% provider_login_url 'google' %}"
+        class="flex items-center justify-center w-full py-2 px-4 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 shadow transition text-gray-700 font-semibold">
+        <img src="{% static 'images/google-icon.svg' %}" alt="Google" class="w-5 h-5 mr-3">
+        Login with Google
+      </a>
+    </div>
+
+    <p class="mt-4 text-center text-gray-600 text-base">
+      Don't have an account?
+      <a href="{% url 'account_signup' %}" class="text-blue-600 hover:underline font-medium">
+        Sign Up
+      </a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<div class="signup-container">
+    <h2>Sign up</h2>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Sign up</button>
+    </form>
+
+    <p>Or sign up using</p>
+    <p>Or sign up using <a href="{% url 'account_login' %}">Log In</a></p>
+    <button type="submit">Login</button>
+    <p>HIHIHIHI</p>
+</div>

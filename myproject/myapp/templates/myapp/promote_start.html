@@ -1,0 +1,11 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+{% extends 'myapp/base.html' %}
+{% block content %}
+  <a href="{% url 'myapp:promote-form' %}"
+    class="block text-center px-4 py-2 bg-[#CD4236] text-white rounded">
+    ฟอร์มโปรโมท
+  </a>
+
+{% endblock %}

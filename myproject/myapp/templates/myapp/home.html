@@ -1,0 +1,275 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+{% if user.is_authenticated and slider_camps_interest %}
+<div class="max-w-3xl mx-auto mt-10 p-4 bg-white rounded shadow">
+  <h1 class="text-2xl font-bold mb-6 text-center text-[#003049]">
+  7 ค่ายล่าสุดที่ตรงกับความสนใจของคุณ
+  </h1>
+  <div class="relative" style="min-height:420px;">
+    <!-- ปุ่มซ้าย -->
+    <button id="prevBtn4" class="absolute left-0 top-1/2 -translate-y-1/2 bg-[#003049] text-white rounded-full w-10 h-10 flex items-center justify-center z-10 shadow hover:bg-[#002133] disabled:opacity-50" aria-label="Previous">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <!-- Cards -->
+    <div id="camp-list4">
+      {% for camp in slider_camps_interest %}
+        <a href="{% url 'myapp:camp_detail' camp.id %}"
+          class="block border border-gray-300 hover:bg-gray-100 transition rounded mb-4 camp-item {% if not forloop.first %}hidden{% endif %}"
+          data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+          <div class="md:flex p-4 gap-4">
+            <!-- รูป -->
+            <div class="flex-shrink-0">
+              {% if camp.upload_file %}
+                <img src="{{ camp.upload_file.url }}" alt="{{ camp.camp_name }}"
+                     class="w-full max-w-[300px] md:max-w-[350px] max-h-[400px] object-contain mx-auto" />
+              {% else %}
+                <div class="w-[200px] h-[150px] bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+                  ไม่มีรูป
+                </div>
+              {% endif %}
+            </div>
+            <!-- รายละเอียด -->
+            <div class="flex-1">
+              <div class="camp-status mt-4 md:mt-2 flex justify-center" data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+                <span class="color-indicator rounded-md px-4 py-2 flex items-center justify-center text-base font-semibold text-white transition-colors duration-300 w-fit">
+                  <span class="status-value">กำลังโหลด...</span>
+                </span>
+              </div>
+              <div class="h-1"></div>
+              <h2 class="text-lg font-bold">{{ camp.camp_name }}</h2>
+              <p class="text-sm text-gray-700 mb-1">{{ camp.description_camp|truncatewords:20 }}</p>
+              <p class="text-sm text-gray-600">วันสิ้นสุด: {{ camp.final_date|date:"j F Y" }}</p>
+              <p class="text-sm">💰 ราคา: {{ camp.price|default:"ฟรี" }}</p>
+              <p class="text-sm">📍 รูปแบบ: {{ camp.get_activity_mode_display }}</p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    <!-- ปุ่มขวา -->
+    <button id="nextBtn4" class="absolute right-0 top-1/2 -translate-y-1/2 bg-[#003049] text-white rounded-full w-10 h-10 flex items-center justify-center z-10 shadow hover:bg-[#002133] disabled:opacity-50" aria-label="Next">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+</div>
+{% endif %}
+
+
+
+
+{% if user.is_authenticated and slider_camps_personal %}
+  <div class="max-w-3xl mx-auto mt-10 p-4 bg-white rounded shadow">
+    <h1 class="text-2xl font-bold mb-6 text-center text-[#003049]">
+      7 ค่ายล่าสุดที่คุณสามารถร่วมกิจกรรมได้
+    </h1>
+    <div class="relative" style="min-height:420px;">
+      <!-- ปุ่มซ้าย -->
+      <button id="prevBtn3" class="absolute left-0 top-1/2 -translate-y-1/2 bg-[#003049] text-white rounded-full w-10 h-10 flex items-center justify-center z-10 shadow hover:bg-[#002133] disabled:opacity-50" aria-label="Previous">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <!-- Cards -->
+      <div id="camp-list3">
+        {% for camp in slider_camps_personal %}
+          <a href="{% url 'myapp:camp_detail' camp.id %}"
+            class="block border border-gray-300 hover:bg-gray-100 transition rounded mb-4 camp-item {% if not forloop.first %}hidden{% endif %}"
+            data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+            <div class="md:flex p-4 gap-4">
+              <!-- รูป -->
+              <div class="flex-shrink-0">
+                {% if camp.upload_file %}
+                  <img src="{{ camp.upload_file.url }}" alt="{{ camp.camp_name }}"
+                      class="w-full max-w-[300px] md:max-w-[350px] max-h-[400px] object-contain mx-auto" />
+                {% else %}
+                  <div class="w-[200px] h-[150px] bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+                    ไม่มีรูป
+                  </div>
+                {% endif %}
+              </div>
+              <!-- รายละเอียด -->
+              <div class="flex-1">
+                <div class="camp-status mt-4 md:mt-2 flex justify-center" data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+                  <span class="color-indicator rounded-md px-4 py-2 flex items-center justify-center text-base font-semibold text-white transition-colors duration-300 w-fit">
+                    <span class="status-value">กำลังโหลด...</span>
+                  </span>
+                </div>
+                <div class="h-1"></div>
+                <h2 class="text-lg font-bold">{{ camp.camp_name }}</h2>
+                <p class="text-sm text-gray-700 mb-1">{{ camp.description_camp|truncatewords:20 }}</p>
+                <p class="text-sm text-gray-600">วันสิ้นสุด: {{ camp.final_date|date:"j F Y" }}</p>
+                <p class="text-sm">💰 ราคา: {{ camp.price|default:"ฟรี" }}</p>
+                <p class="text-sm">📍 รูปแบบ: {{ camp.get_activity_mode_display }}</p>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+      <!-- ปุ่มขวา -->
+      <button id="nextBtn3" class="absolute right-0 top-1/2 -translate-y-1/2 bg-[#003049] text-white rounded-full w-10 h-10 flex items-center justify-center z-10 shadow hover:bg-[#002133] disabled:opacity-50" aria-label="Next">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+{% endif %}
+
+
+
+
+<!-- Slider 2 (เช่น ค่ายล่าสุด) -->
+<div class="max-w-3xl mx-auto mt-10 p-4 bg-white rounded shadow">
+  <h1 class="text-2xl font-bold mb-6 text-center">ค่ายมาใหม่ล่าสุด</h1>
+  <div class="relative" style="min-height:420px;">
+    <!-- ปุ่มซ้าย -->
+    <button id="prevBtn2" type="button"
+      class="absolute left-0 top-1/2 -translate-y-1/2 bg-[#003049] text-white rounded-full w-10 h-10 flex items-center justify-center z-10 shadow hover:bg-[#002133] disabled:opacity-50"
+      aria-label="Previous">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <!-- Cards -->
+    <div id="camp-list2">
+      {% for camp in slider_camps_by_id %}
+        <a href="{% url 'myapp:camp_detail' camp.id %}"
+          class="block border border-gray-300 hover:bg-gray-100 transition rounded mb-4 camp-item {% if not forloop.first %}hidden{% endif %}"
+          data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+          <div class="md:flex p-4 gap-4">
+            <!-- รูป -->
+            <div class="flex-shrink-0">
+              {% if camp.upload_file %}
+                <img src="{{ camp.upload_file.url }}" alt="{{ camp.camp_name }}"
+                  class="w-full max-w-[300px] md:max-w-[350px] max-h-[400px] object-contain mx-auto" />
+              {% else %}
+                <div class="w-[200px] h-[150px] bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+                  ไม่มีรูป
+                </div>
+              {% endif %}
+            </div>
+            <!-- รายละเอียด -->
+            <div class="flex-1">
+              <div class="camp-status mt-4 md:mt-2 flex justify-center" data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+                <span class="color-indicator rounded-md px-4 py-2 flex items-center justify-center text-base font-semibold text-white transition-colors duration-300 w-fit">
+                  <span class="status-value">กำลังโหลด...</span>
+                </span>
+              </div>
+              <div class="h-1"></div>
+              <h2 class="text-lg font-bold">{{ camp.camp_name }}</h2>
+              <p class="text-sm text-gray-700 mb-1">{{ camp.description_camp|truncatewords:20 }}</p>
+              <p class="text-sm text-gray-600">วันสิ้นสุด: {{ camp.final_date|date:"j F Y" }}</p>
+              <p class="text-sm">💰 ราคา: {{ camp.price|default:"ฟรี" }}</p>
+              <p class="text-sm">📍 รูปแบบ: {{ camp.get_activity_mode_display }}</p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    <!-- ปุ่มขวา -->
+    <button id="nextBtn2" type="button"
+      class="absolute right-0 top-1/2 -translate-y-1/2 bg-[#003049] text-white rounded-full w-10 h-10 flex items-center justify-center z-10 shadow hover:bg-[#002133] disabled:opacity-50"
+      aria-label="Next">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Slider 1 (เช่น ค่ายที่ใกล้หมดเขตที่สุด) -->
+<div class="max-w-3xl mx-auto mt-10 p-4 bg-white rounded shadow">
+  <h1 class="text-2xl font-bold mb-6 text-center">ค่ายใกล้ปิดรับสมัคร</h1>
+  <div class="relative" style="min-height:420px;">
+    <!-- ปุ่มซ้าย -->
+    <button id="prevBtn1" type="button"
+      class="absolute left-0 top-1/2 -translate-y-1/2 bg-[#003049] text-white rounded-full w-10 h-10 flex items-center justify-center z-10 shadow hover:bg-[#002133] disabled:opacity-50"
+      aria-label="Previous">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <!-- Cards -->
+    <div id="camp-list1">
+      {% for camp in slider_camps %}
+        <a href="{% url 'myapp:camp_detail' camp.id %}"
+          class="block border border-gray-300 hover:bg-gray-100 transition rounded mb-4 camp-item {% if not forloop.first %}hidden{% endif %}"
+          data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+          <div class="md:flex p-4 gap-4">
+            <!-- รูป -->
+            <div class="flex-shrink-0">
+              {% if camp.upload_file %}
+                <img src="{{ camp.upload_file.url }}" alt="{{ camp.camp_name }}"
+                  class="w-full max-w-[300px] md:max-w-[350px] max-h-[400px] object-contain mx-auto" />
+              {% else %}
+                <div class="w-[200px] h-[150px] bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+                  ไม่มีรูป
+                </div>
+              {% endif %}
+            </div>
+            <!-- รายละเอียด -->
+            <div class="flex-1">
+              <div class="camp-status mt-4 md:mt-2 flex justify-center" data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+                <span class="color-indicator rounded-md px-4 py-2 flex items-center justify-center text-base font-semibold text-white transition-colors duration-300 w-fit">
+                  <span class="status-value">กำลังโหลด...</span>
+                </span>
+              </div>
+              <div class="h-1"></div>
+              <h2 class="text-lg font-bold">{{ camp.camp_name }}</h2>
+              <p class="text-sm text-gray-700 mb-1">{{ camp.description_camp|truncatewords:20 }}</p>
+              <p class="text-sm text-gray-600">วันสิ้นสุด: {{ camp.final_date|date:"j F Y" }}</p>
+              <p class="text-sm">💰 ราคา: {{ camp.price|default:"ฟรี" }}</p>
+              <p class="text-sm">📍 รูปแบบ: {{ camp.get_activity_mode_display }}</p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    <!-- ปุ่มขวา -->
+    <button id="nextBtn1" type="button"
+      class="absolute right-0 top-1/2 -translate-y-1/2 bg-[#003049] text-white rounded-full w-10 h-10 flex items-center justify-center z-10 shadow hover:bg-[#002133] disabled:opacity-50"
+      aria-label="Next">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- ใช้ Script ตัวเดียวควบคุมหลาย slider ได้เลย -->
+<script>
+function setupCarousel(listId, prevBtnId, nextBtnId) {
+  const camps = Array.from(document.querySelectorAll(`#${listId} .camp-item`));
+  let idx = 0;
+  function updateCarousel() {
+    camps.forEach((el, i) => el.classList.toggle('hidden', i !== idx));
+    document.getElementById(prevBtnId).disabled = idx === 0;
+    document.getElementById(nextBtnId).disabled = idx === camps.length - 1;
+  }
+  document.getElementById(prevBtnId).addEventListener('click', () => {
+    if (idx > 0) { idx--; updateCarousel(); }
+  });
+  document.getElementById(nextBtnId).addEventListener('click', () => {
+    if (idx < camps.length - 1) { idx++; updateCarousel(); }
+  });
+  updateCarousel();
+}
+document.addEventListener("DOMContentLoaded", function () {
+  setupCarousel('camp-list1', 'prevBtn1', 'nextBtn1');
+  setupCarousel('camp-list2', 'prevBtn2', 'nextBtn2');
+  setupCarousel('camp-list3', 'prevBtn3', 'nextBtn3');
+  setupCarousel('camp-list4', 'prevBtn4', 'nextBtn4');
+});
+</script>
+
+<!-- ใส่ script อื่นๆ เช่น list_camp.js เพิ่มได้ปกติ -->
+<script src="{% static 'js/list_camp.js' %}"></script>
+{% endblock %}

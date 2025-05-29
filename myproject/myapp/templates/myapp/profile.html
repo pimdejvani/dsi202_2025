@@ -1,0 +1,236 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+  <div style="text-align: center; font-weight: bold; font-size: 24px; margin-bottom: 20px;">
+    โปรไฟล์
+  </div>
+  <form method="post" enctype="multipart/form-data" id="profileForm">
+    {% csrf_token %}
+    
+    <!-- ... ฟิลด์ต่าง ๆ ตามของเดิม ... -->
+    <!-- Username -->
+    <div style="margin-bottom: 15px;">
+      <label for="id_username" style="display: block; margin-bottom: 5px;">ชื่อผู้ใช้:</label>
+      <input type="text" name="username" id="id_username"
+            value="{{ form.username.value|default:'' }}"
+            style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                    border: 1px solid #ccc; border-radius: 4px;">
+      {% if form.username.errors %}
+        <div class="text-danger">
+          {% for error in form.username.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <!-- Birth -->
+    <div style="margin-bottom: 15px;">
+      <label for="birth" style="display: block; margin-bottom: 5px;">วันเกิด:</label>
+      <input type="text" name="birth" id="birth"
+            value="{{ form.birth.value|date:'Y-m-d' }}"
+            placeholder="yyyy-mm-dd" readonly
+            style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                    border: 1px solid #ccc; border-radius: 4px;">
+      {% if form.birth.errors %}
+        <div class="text-danger">
+          {% for error in form.birth.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- <pre>
+    {{ form.level.field.choices }}
+    </pre> -->
+
+
+    
+    <!-- ฟิลด์ Level (dropdown) -->
+    <div style="margin-bottom: 15px;">
+      <label for="id_level" style="display: block; margin-bottom: 5px;">ระดับการศึกษา:</label>
+      <select name="level" id="id_level"
+              style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                    border: 1px solid #ccc; border-radius: 4px;">
+        <option value="">เลือกระดับการศึกษา</option>
+        {% for choice in form.level.field.choices %}
+          <option value="{{ choice.0 }}" {% if choice.0 == form.level.value %}selected{% endif %}>
+            {{ choice.1 }}
+          </option>
+        {% endfor %}
+      </select>
+      {% if form.level.errors %}
+        <div class="text-danger">
+          {% for error in form.level.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- ฟิลด์ Grade (เกรด) -->
+    <div id="grade_div" style="margin-bottom: 15px; display: none;">
+      <label for="id_grade" style="display: block; margin-bottom: 5px;">ชั้นปีที่:</label>
+      <select name="grade" id="id_grade"
+              style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                    border: 1px solid #ccc; border-radius: 4px;">
+        <option value="">เลือกเกรด</option>
+        {% for choice in form.grade.field.choices %}
+          <option value="{{ choice.0 }}" {% if choice.0 == form.grade.value %}selected{% endif %}>
+            {{ choice.1 }}
+          </option>
+        {% endfor %}
+      </select>
+      {% if form.grade.errors %}
+        <div class="text-danger">
+          {% for error in form.grade.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- ฟิลด์ Degree (ระดับปริญญา) -->
+    <div id="degree_div" style="margin-bottom: 15px; display: none;">
+      <label for="id_degree" style="display: block; margin-bottom: 5px;">ระดับ:</label>
+      <select name="degree" id="id_degree"
+              style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                    border: 1px solid #ccc; border-radius: 4px;">
+        <option value="">เลือกระดับปริญญา</option>
+        {% for choice in form.degree.field.choices %}
+          <option value="{{ choice.0 }}" {% if choice.0 == form.degree.value %}selected{% endif %}>
+            {{ choice.1 }}
+          </option>
+        {% endfor %}
+      </select>
+      {% if form.degree.errors %}
+        <div class="text-danger">
+          {% for error in form.degree.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <label for="interest" style="display: block; margin-bottom: 5px;">ความสนใจ:</label>
+      <div style="display: flex; gap: 8px; max-width: 500px;">
+        <input type="text" id="interest" name="interest"
+              placeholder="กรอกความสนใจ"
+              value="{{ form.interest.value|default:'' }}"
+              style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" />
+        <button type="button" id="add-tag-btn"
+                style="padding: 8px 12px; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">
+          ➕
+        </button>
+      </div>
+      {% if form.interest.errors %}
+        <div class="text-danger" style="margin-top: 5px;">
+          {% for error in form.interest.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- ปุ่มล้างข้อมูลและบันทึก -->
+    <div style="display: flex; gap: 10px;">
+      <button type="button"
+              id="clearFormBtn"
+              style="background-color: #999; color: white; border: none; padding: 10px 20px;
+                    border-radius: 6px; font-weight: bold; cursor: pointer;">
+        ล้างข้อมูลทั้งหมด
+      </button>
+
+      <button type="submit"
+              style="background-color: #CD4236; color: white; border: none; padding: 10px 20px;
+                    border-radius: 6px; font-weight: bold; cursor: pointer;">
+        บันทึกข้อมูล
+      </button>
+    </div>
+  </form>
+
+  <!-- Flatpickr -->
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <!-- Tagify -->
+  <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" />
+
+  <script>
+    // flatpickr
+    flatpickr("#birth", {
+        dateFormat: "Y-m-d",
+        placeholder: "yyyy-mm-dd",
+        defaultDate: "{{ form.birth.value|date:'Y-m-d' }}",
+        enableTime: false,
+        allowInput: false,
+    });
+
+    // Tagify
+    var input = document.getElementById('interest');
+    var tagify = new Tagify(input, {
+        whitelist: ["ค่ายสายภาษา", "ค่ายสายสุขภาพ", "ค่ายสายวิศวกรรม", "ค่ายสายดิจิทัล/IT"],
+        maxTags: 5,
+        dropdown: { enabled: 0 }
+    });
+
+    document.getElementById('add-tag-btn').addEventListener('click', function() {
+        var tagValue = input.value.trim();
+        if (tagValue) {
+            tagify.addTags([tagValue]);
+            input.value = '';
+        }
+    });
+    input.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            var tagValue = input.value.trim();
+            if (tagValue) {
+                tagify.addTags([tagValue]);
+                input.value = '';
+            }
+        }
+    });
+
+    // ===== ปุ่มล้างข้อมูลฟอร์ม =====
+    document.getElementById('clearFormBtn').addEventListener('click', function() {
+      const form = document.getElementById('profileForm');
+      // ล้าง input type text, textarea
+      form.querySelectorAll('input[type="text"], textarea').forEach(el => { el.value = ''; });
+      // ล้าง select
+      form.querySelectorAll('select').forEach(el => { el.selectedIndex = 0; });
+      // ล้าง tagify
+      if (tagify) tagify.removeAllTags();
+      // ล้าง flatpickr
+      if (flatpickr && flatpickr("#birth")[0]) flatpickr("#birth")[0].clear();
+      // reset radio/checkbox ด้วยถ้ามี
+      form.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(el => { el.checked = false; });
+    });
+
+
+    function toggleFields() {
+      const level = document.getElementById('id_level').value;
+      const gradeDiv = document.getElementById('grade_div');
+      const degreeDiv = document.getElementById('degree_div');
+
+      gradeDiv.style.display = 'none';
+      degreeDiv.style.display = 'none';
+
+      if (level === 'primary' || level === 'secondary') {
+        gradeDiv.style.display = 'block';
+      } else if (level === 'degree') {
+        degreeDiv.style.display = 'block';
+      }
+    }
+    // เรียกตอนโหลดหน้า
+    document.addEventListener('DOMContentLoaded', toggleFields);
+    // เรียกเมื่อเปลี่ยน dropdown
+    document.getElementById('id_level').addEventListener('change', toggleFields);
+
+    // เพิ่มในปุ่มล้างข้อมูล (ตอนนี้ยังไม่มีใน clearFormBtn)
+    document.getElementById('clearFormBtn').addEventListener('click', function() {
+      // ... อื่น ๆ ...
+      toggleFields(); // reset ให้ช่อง grade/degree ซ่อน
+    });
+  </script>
+{% endblock %}

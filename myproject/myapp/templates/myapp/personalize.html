@@ -1,0 +1,297 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="max-w-3xl mx-auto mt-10 p-4 bg-white rounded shadow">
+
+  <h1 class="text-2xl font-bold mb-6 text-center">ค้นหาแคมป์ที่ตรงกับคุณ</h1>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- วันเกิด -->
+    <div style="margin-bottom: 15px;">
+      <label for="birth" style="display: block; margin-bottom: 5px;">วันเกิด:</label>
+      <input
+        type="text"
+        name="birth"
+        id="birth"
+        value="{{ student_birth|default:'' }}"
+        placeholder="yyyy-mm-dd"
+        style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px; border: 1px solid #ccc; border-radius: 4px;"
+      >
+    </div>
+    <!-- ระดับกา
+  รศึกษา -->
+    <div style="margin-bottom: 15px;">
+      <label for="id_level" style="display: block; margin-bottom: 5px;">ระดับการศึกษา:</label>
+      <select name="level" id="id_level"
+              style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                    border: 1px solid #ccc; border-radius: 4px;">
+        <option value="">เลือกระดับการศึกษา</option>
+        <option value="primary" {% if student_level == "primary" %}selected{% endif %}>ประถม</option>
+        <option value="secondary" {% if student_level == "secondary" %}selected{% endif %}>มัธยม</option>
+        <option value="vocational_minor" {% if student_level == "vocational_minor" %}selected{% endif %}>ปวช</option>
+        <option value="vocational_major" {% if student_level == "vocational_major" %}selected{% endif %}>ปวส</option>
+        <option value="drop" {% if student_level == "drop" %}selected{% endif %}>เด็กซิ่ว</option>
+        <option value="degree" {% if student_level == "degree" %}selected{% endif %}>ปริญญา</option>
+        <option value="other" {% if student_level == "other" %}selected{% endif %}>บุคคลทั่วไป</option>
+      </select>
+    </div>
+
+    <!-- ชั้นปี -->
+    <div id="grade_div" style="margin-bottom: 15px; display: none;">
+      <label for="id_grade" style="display: block; margin-bottom: 5px;">ชั้นปีที่:</label>
+      <select name="grade" id="id_grade"
+              style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                    border: 1px solid #ccc; border-radius: 4px;">
+        <option value="">เลือกเกรด</option>
+        <option value="1" {% if student_grade == "1" %}selected{% endif %}>1</option>
+        <option value="2" {% if student_grade == "2" %}selected{% endif %}>2</option>
+        <option value="3" {% if student_grade == "3" %}selected{% endif %}>3</option>
+        <option value="4" {% if student_grade == "4" %}selected{% endif %}>4</option>
+        <option value="5" {% if student_grade == "5" %}selected{% endif %}>5</option>
+        <option value="6" {% if student_grade == "6" %}selected{% endif %}>6</option>
+      </select>
+    </div>
+
+    <!-- ระดับปริญญา -->
+    <div id="degree_div" style="margin-bottom: 15px; display: none;">
+      <label for="id_degree" style="display: block; margin-bottom: 5px;">ระดับ:</label>
+      <select name="degree" id="id_degree"
+              style="width: 100%; padding: 8px; box-sizing: border-box; max-width: 500px;
+                    border: 1px solid #ccc; border-radius: 4px;">
+        <option value="">เลือกระดับปริญญา</option>
+        <option value="bachelor" {% if student_degree == "bachelor" %}selected{% endif %}>ตรี</option>
+        <option value="master" {% if student_degree == "master" %}selected{% endif %}>โท</option>
+        <option value="doctorate" {% if student_degree == "doctorate" %}selected{% endif %}>เอก</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <label for="interest" style="display: block; margin-bottom: 5px;">ความสนใจ:</label>
+      <div style="display: flex; gap: 8px; max-width: 500px;">
+        <input type="text" id="interest" name="interest"
+              placeholder="กรอกความสนใจ"
+              value="{% if form.interest.value %}{{ form.interest.value }}{% elif student_interest %}{{ student_interest }}{% endif %}"
+              style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" />
+        <button type="button" id="add-tag-btn"
+                style="padding: 8px 12px; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">
+          ➕
+        </button>
+      </div>
+      {% if form.interest.errors %}
+        <div class="text-danger" style="margin-top: 5px;">
+          {% for error in form.interest.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 24px;">
+      <button type="button" id="clear-btn"
+              style="background:#ccc;color:#222;padding:10px 24px;border-radius:6px;font-weight:bold;border:none;cursor:pointer;">
+        ล้างข้อมูล
+      </button>
+      <button type="submit"
+              style="background:#CD4236;color:white;padding:10px 32px;border-radius:6px;font-weight:bold;border:none;cursor:pointer;">
+        ค้นหาค่ายที่ตรงกับคุณ
+      </button>
+    </div>
+
+  </form>
+
+  <hr class="my-8">
+
+  {% if camp_results %}
+    <div class="max-w-3xl mx-auto mt-10 p-4 bg-white rounded shadow">
+      <h1 class="text-2xl font-bold mb-6 text-center">ผลการค้นหาแคมป์ที่ตรงกับคุณ</h1>
+      <div id="camp-list">
+        {% for camp in camp_results %}
+          <a href="{% url 'myapp:camp_detail' camp.id %}"
+            class="block border border-gray-300 hover:bg-gray-100 transition rounded mb-4 camp-item {% if forloop.counter > 5 %}hidden{% endif %}">
+            <div class="md:flex p-4 gap-4">
+              <div class="flex-shrink-0">
+                {% if camp.upload_file %}
+                  <img src="{{ camp.upload_file.url }}" alt="{{ camp.camp_name }}"
+                      class="w-full max-w-[300px] md:max-w-[350px] max-h-[400px] object-contain mx-auto" />
+                {% else %}
+                  <div class="w-[200px] h-[150px] bg-gray-200 flex items-center justify-center text-sm text-gray-500">
+                    ไม่มีรูป
+                  </div>
+                {% endif %}
+              </div>
+              <div class="flex-1">
+                <div class="camp-item mt-4 md:mt-2 flex justify-center" data-final-date="{{ camp.final_date|date:'Y-m-d' }}">
+                  <span class="color-indicator rounded-md px-4 py-2 flex items-center justify-center text-base font-semibold text-white transition-colors duration-300 w-fit">
+                    <span class="status-value">กำลังโหลด...</span>
+                  </span>
+                </div>
+                <div class="h-1"></div>
+                <h2 class="text-lg font-bold">{{ camp.camp_name }}</h2>
+                <p class="text-sm text-gray-700 mb-1">{{ camp.description_camp|truncatewords:20 }}</p>
+                <p class="text-sm text-gray-600">วันสิ้นสุด: {{ camp.final_date|date:"j F Y" }}</p>
+                <p class="text-sm">💰 ราคา: {{ camp.price|default:"ฟรี" }}</p>
+                <p class="text-sm">📍 รูปแบบ: {{ camp.get_activity_mode_display }}</p>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+      {% if camp_results|length > 5 %}
+        <div class="text-center mt-4">
+          <button id="show-more-btn" class="px-6 py-2 bg-[#CD4236] text-white rounded hover:bg-blue-800">
+            ดูเพิ่มเติม
+          </button>
+        </div>
+      {% endif %}
+    </div>
+    <script src="{% static 'js/list_camp.js' %}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('show-more-btn');
+        if (!btn) return;
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('#camp-list .camp-item.hidden').forEach(el => el.classList.remove('hidden'));
+          btn.style.display = 'none';
+        });
+      });
+    </script>
+  {% else %}
+    <div class="text-center text-gray-500 py-10">ไม่พบค่ายที่ตรงเงื่อนไข</div>
+  {% endif %}
+</div>
+
+
+
+
+
+
+
+
+<!-- โหลด js เดิม (ใช้ร่วมกับหน้า list ได้เลย) -->
+<script src="{% static 'js/list_camp.js' %}"></script>
+<script>
+  // ปุ่มดูเพิ่มเติม
+  document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('show-more-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#camp-list .camp-item.hidden').forEach(el => el.classList.remove('hidden'));
+      btn.style.display = 'none';
+    });
+  });
+</script>
+
+
+<script>
+  document.getElementById('clear-btn').addEventListener('click', function() {
+      document.querySelectorAll('form input[type="text"], form select').forEach(el => {
+          el.value = '';
+          if (el.tagName === "SELECT") {
+              el.selectedIndex = 0;
+          }
+      });
+      // ล้าง flatpickr
+      if (window.birthFlatpickrInstance) {
+          window.birthFlatpickrInstance.clear();
+      }
+      // Tagify
+      if (window.tagify) {
+          tagify.removeAllTags();
+      }
+      toggleFields();
+  });
+
+</script>
+
+
+
+
+
+<!-- Flatpickr JS & CSS -->
+<link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  flatpickr("#birth", {
+    dateFormat: "Y-m-d",
+    maxDate: "today"
+  });
+</script>
+
+
+
+<script>
+  function toggleFields() {
+    const level = document.getElementById('id_level').value;
+    const gradeDiv = document.getElementById('grade_div');
+    const degreeDiv = document.getElementById('degree_div');
+
+    // ซ่อนทุกอย่างก่อน
+    gradeDiv.style.display = 'none';
+    degreeDiv.style.display = 'none';
+
+    if (level === 'primary' || level === 'secondary') {
+      gradeDiv.style.display = 'block';
+    } else if (level === 'degree') {
+      degreeDiv.style.display = 'block';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', toggleFields);
+  document.getElementById('id_level').addEventListener('change', toggleFields);
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" />
+<script>
+  // ดึงค่าที่มีอยู่ (string comma-separated หรือ empty)
+  var input = document.getElementById('interest');
+  var startValue = input.value;
+
+  // หากเป็น comma-separated (string) ให้แปลงเป็น array
+  if (startValue && typeof startValue === "string" && startValue.includes(',')) {
+    startValue = startValue.split(',').map(s => s.trim());
+    input.value = startValue.join(',');
+  }
+
+  // สร้าง Tagify
+  var tagify = new Tagify(input, {
+    whitelist: ["ค่ายสายภาษา", "ค่ายสายสุขภาพ", "ค่ายสายวิศวกรรม", "ค่ายสายดิจิทัล/IT"],
+    maxTags: 5,
+    dropdown: { enabled: 0 }
+  });
+
+  // เพิ่ม tag เมื่อกดปุ่ม "+"
+  document.getElementById('add-tag-btn').addEventListener('click', function() {
+    var tagValue = input.value.trim();
+    if (tagValue) {
+      tagify.addTags([tagValue]);
+      input.value = '';
+    }
+  });
+
+  // เพิ่ม tag เมื่อกด Enter
+  input.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+      var tagValue = input.value.trim();
+      if (tagValue) {
+        tagify.addTags([tagValue]);
+        input.value = '';
+      }
+    }
+  });
+</script>
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
